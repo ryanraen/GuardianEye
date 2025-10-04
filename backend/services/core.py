@@ -19,15 +19,19 @@ except Exception as e:
 
 def process_image(image_bytes: base64) -> list[str]:
     results = []
+    llm_analysis = get_llm_analysis(image_bytes)
+    results.append(llm_analysis)
+    return results
+
+def get_llm_analysis(image_bytes: base64):
     response = client.models.generate_content(
-    model='gemini-2.5-flash',
-    contents=[
-        types.Part.from_bytes(
-        data=image_bytes,
-        mime_type='image/jpeg',
-        ),
-        PROMPT,
+        model='gemini-2.5-flash',
+        contents=[
+            types.Part.from_bytes(
+            data=image_bytes,
+            mime_type='image/jpeg',
+            ),
+            PROMPT,
         ]
     )
-    results.append(response.text)
-    return results
+    return response.text
