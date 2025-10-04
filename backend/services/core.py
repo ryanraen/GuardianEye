@@ -3,6 +3,7 @@ import models
 import base64
 from google import genai
 from google.genai import types
+import base64
 
 GEMINI_MODEL = 'gemini-2.5-flash'
 PROMPT = f"""
@@ -17,21 +18,28 @@ try:
 except Exception as e:
     print(e)
 
-def process_image(image_bytes: base64) -> list[str]:
+def process_image(frame: base64, context: dict) -> list[str]:
+    """
+    Main app orchestration pipeline
+    frame: base64 image of a captured frame from camera feed
+    context: dict of e.g., {'room': 'kitchen', 'timestamp': ...}
+    """
     results = []
-    llm_analysis = get_llm_analysis(image_bytes)
+    llm_analysis = get_llm_analysis(frame)
     results.append(llm_analysis)
     return results
 
-def get_llm_analysis(image_bytes: base64):
+def get_llm_analysis(frame: base64):
+    
+    # ambiguous incident case
     response = client.models.generate_content(
-        model='gemini-2.5-flash',
-        contents=[
-            types.Part.from_bytes(
-            data=image_bytes,
-            mime_type='image/jpeg',
-            ),
-            PROMPT,
+    model='gemini-2.5-flash',
+    contents=[
+        types.Part.from_bytes(
+        data=frame,
+        mime_type='image/jpeg',
+        ),
+        PROMPT,
         ]
     )
     return response.text
