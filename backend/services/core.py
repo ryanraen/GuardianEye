@@ -1,9 +1,10 @@
-import models
 
 import base64
 from google import genai
 from google.genai import types
 import base64
+import os
+from dotenv import load_dotenv
 
 GEMINI_MODEL = 'gemini-2.5-flash'
 PROMPT = f"""
@@ -12,11 +13,10 @@ PROMPT = f"""
     Based on what you see, describe if this looks like a risk or normal behavior.
     Respond concisely and suggest one next step.
     """
+    
+load_dotenv()
 
-try:
-    client = genai.Client()
-except Exception as e:
-    print(e)
+client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
 def process_image(frame: base64, context: dict) -> list[str]:
     """
@@ -25,17 +25,21 @@ def process_image(frame: base64, context: dict) -> list[str]:
     context: dict of e.g., {'room': 'kitchen', 'timestamp': ...}
     """
     results = []
+    llm_analysis = get_llm_analysis(frame)
+    results.append(llm_analysis)
+    return results
+
+def get_llm_analysis(frame: base64):
     
     # ambiguous incident case
     response = client.models.generate_content(
-    model='gemini-2.5-flash',
+    model=GEMINI_MODEL,
     contents=[
         types.Part.from_bytes(
         data=frame,
-        mime_type='image/jpeg',
+        mime_type='image/png',
         ),
         PROMPT,
         ]
     )
-    results.append(response.text)
-    return results
+    return response.text
