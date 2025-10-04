@@ -24,8 +24,7 @@ def process_image(frame: base64, context: dict) -> list[str]:
     frame: base64 image of a captured frame from camera feed
     context: dict of e.g., {'room': 'kitchen', 'timestamp': ...}
     """
-    
-    response = []
+    results = []
     
     # ambiguous incident case
     response = client.models.generate_content(
