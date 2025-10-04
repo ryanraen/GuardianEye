@@ -25,6 +25,11 @@ def process_image(frame: base64, context: dict) -> list[str]:
     context: dict of e.g., {'room': 'kitchen', 'timestamp': ...}
     """
     results = []
+    llm_analysis = get_llm_analysis(frame)
+    results.append(llm_analysis)
+    return results
+
+def get_llm_analysis(frame: base64):
     
     # ambiguous incident case
     response = client.models.generate_content(
@@ -37,5 +42,4 @@ def process_image(frame: base64, context: dict) -> list[str]:
         PROMPT,
         ]
     )
-    results.append(response.text)
-    return results
+    return response.text
