@@ -4,29 +4,30 @@ from strands.models.gemini import GeminiModel
 from strands.tools.mcp import MCPClient
 from mcp.client.stdio import stdio_client, StdioServerParameters
 from dotenv import load_dotenv
-import tempfile
-from PIL import Image
-import base64
-from google.genai import types
 
-def ambiguous_detector(frame: bytes) -> dict:
-    
+async def ambiguous_detector(frame: bytes) -> dict:
+    """
+    Analyze a given image frame using Gemini model and MCP server for safety risks.
+    Properly closes all client sessions to avoid aiohttp warnings.
+    """
+
     GEMINI_MODEL = 'gemini-2.5-flash'
-    
+    load_dotenv()
     print("Connecting to server...")
-    mcp_client = MCPClient(lambda: stdio_client(StdioServerParameters(
+
+    # Use async context manager for proper cleanup
+    async with MCPClient(lambda: stdio_client(StdioServerParameters(
         command="python",
         args=["services/mcpserver.py"]
-    )))
+    ))) as mcp_client:
 
-    print("Setting up Gemini model...")
-    load_dotenv()
-    model = GeminiModel(
-        client_args={
-            "api_key": os.environ.get("GEMINI_API_KEY")
+        print("Setting up Gemini model...")
+        model = GeminiModel(
+            client_args={
+                "api_key": os.environ.get("GEMINI_API_KEY")
             },
-        model_id=GEMINI_MODEL
-    )
+            model_id=GEMINI_MODEL
+        )
 
     try:
         with mcp_client:
