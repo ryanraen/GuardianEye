@@ -185,6 +185,28 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, onDismiss }) =
     }
   }
 
+  const handleNotify = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: `🚨 GuardianEye Alert: ${enhancedEvent.incidentType} detected at ${event.location}. Severity: ${event.severity.toUpperCase()}. ${enhancedEvent.aiSummary}`,
+        }),
+      });
+  
+      const result = await response.json();
+      if (result.success) {
+        alert("✅ Notification sent successfully!");
+      } else {
+        alert("⚠️ Failed to send notification: " + result.error);
+      }
+    } catch (error) {
+      console.error("Notify request failed:", error);
+      alert("Error sending notification. Check console for details.");
+    }
+  };
+
   return (
     <div className="event-detail">
       <div className="event-detail-header">
@@ -251,7 +273,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, onDismiss }) =
                     <button className="action-button dismiss" onClick={onDismiss}>
                       ✖️ DISMISS
                     </button>
-            <button className="action-button notify">
+            <button className="action-button notify" onClick={handleNotify}>
               📢 NOTIFY
             </button>
             <button className="action-button emergency">
@@ -316,5 +338,8 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, onDismiss }) =
     </div>
   )
 }
+
+
+  
 
 export default EventDetail
