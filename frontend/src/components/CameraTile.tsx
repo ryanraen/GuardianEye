@@ -1,12 +1,18 @@
-import React from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 import { Camera } from '../App'
 import './CameraTile.css'
 
 interface CameraTileProps {
   camera: Camera
+  onDoubleClick?: (camera: Camera) => void
 }
 
-const CameraTile: React.FC<CameraTileProps> = ({ camera }) => {
+const CameraTile: React.FC<CameraTileProps> = ({ camera, onDoubleClick }) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return '#44ff44'
@@ -25,7 +31,52 @@ const CameraTile: React.FC<CameraTileProps> = ({ camera }) => {
     }
   }
 
-  // Mock camera feed - in real app this would be a video stream
+  const startWebcam = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          width: { ideal: 640 },
+          height: { ideal: 480 },
+          facingMode: 'user'
+        },
+        audio: false
+      });
+      
+      setStream(mediaStream);
+      setIsStreaming(true);
+      setError(null);
+      
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
+      }
+    } catch (err) {
+      console.error('Error accessing webcam:', err);
+      setError('Camera access denied');
+      setIsStreaming(false);
+    }
+  };
+
+  const stopWebcam = () => {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      setStream(null);
+      setIsStreaming(false);
+    }
+  };
+
+  useEffect(() => {
+    if (camera.status === 'active' && camera.id === 'cam1') {
+      startWebcam();
+    } else {
+      stopWebcam();
+    }
+
+    return () => {
+      stopWebcam();
+    };
+  }, [camera.status, camera.id]);
+
+  // Live camera feed rendering
   const renderCameraFeed = () => {
     if (camera.status === 'offline') {
       return (
@@ -38,18 +89,50 @@ const CameraTile: React.FC<CameraTileProps> = ({ camera }) => {
       )
     }
 
-    if (camera.status === 'error') {
+    if (camera.status === 'error' || error) {
       return (
         <div className="camera-feed error">
           <div className="error-overlay">
             <div className="error-icon">⚠️</div>
-            <div className="error-text">CONNECTION ERROR</div>
+            <div className="error-text">{error || 'CONNECTION ERROR'}</div>
+            <button 
+              className="retry-button"
+              onClick={startWebcam}
+              style={{ marginTop: '10px', padding: '5px 10px', fontSize: '12px' }}
+            >
+              Retry Camera
+            </button>
           </div>
         </div>
       )
     }
 
-    // Active camera - mock video feed
+    // Live webcam feed for active cameras
+    if (camera.status === 'active' && isStreaming && camera.id === 'cam1') {
+      return (
+        <div className="camera-feed active">
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            muted
+            className="live-video"
+          />
+          <div className="video-overlay">
+            <div className="timestamp">{camera.lastUpdate}</div>
+            <div className="status-indicator">
+              <span 
+                className="status-dot"
+                style={{ backgroundColor: getStatusColor(camera.status) }}
+              ></span>
+              {getStatusText(camera.status)}
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    // Mock video feed for other cameras
     return (
       <div className="camera-feed active">
         <div className="mock-video">
@@ -68,10 +151,23 @@ const CameraTile: React.FC<CameraTileProps> = ({ camera }) => {
     )
   }
 
+  const handleDoubleClick = () => {
+    if (onDoubleClick && camera.status === 'active') {
+      onDoubleClick(camera);
+    }
+  };
+
   return (
-    <div className="camera-tile">
+    <div 
+      className="camera-tile" 
+      onDoubleClick={handleDoubleClick}
+      style={{ cursor: camera.status === 'active' ? 'pointer' : 'default' }}
+    >
       <div className="camera-header">
-        <h3 className="camera-title">{camera.location}</h3>
+        <div className="camera-info">
+          <h3 className="camera-title">{camera.location}</h3>
+          <div className="camera-location">Senior Care Facility, Room {camera.id.replace('cam', '')}</div>
+        </div>
         <div className="camera-status">
           <span 
             className="status-dot"
@@ -82,6 +178,11 @@ const CameraTile: React.FC<CameraTileProps> = ({ camera }) => {
       </div>
       <div className="camera-body">
         {renderCameraFeed()}
+        {camera.status === 'active' && (
+          <div className="double-click-hint">
+            Double-click to analyze
+          </div>
+        )}
       </div>
     </div>
   )

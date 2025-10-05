@@ -6,25 +6,26 @@
 }
 
 .indicator-content {
-  background-color: rgba(42, 42, 42, 0.95);
-  border: 1px solid #444;
+  background-color: rgba(26, 26, 26, 0.9);
+  border: 1px solid #333;
   border-radius: 6px;
   padding: 8px 12px;
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
-  backdrop-filter: blur(5px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .indicator-icon {
   font-size: 16px;
+  color: #ffffff;
 }
 
 .indicator-text {
-  color: #e0e0e0;
+  color: #ffffff;
   font-size: 12px;
-  font-weight: bold;
-  letter-spacing: 1px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
 }
