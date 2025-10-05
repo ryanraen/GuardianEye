@@ -73,6 +73,7 @@ const RealTimeAnalyzer: React.FC<RealTimeAnalyzerProps> = ({ camera, onBack }) =
   const mockAudioTranscript = "Help! I've fallen and I can't get up!";
 
   const startWebcam = async () => {
+    console.log('Starting webcam for camera:', camera.id, 'location:', camera.location);
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
@@ -83,12 +84,14 @@ const RealTimeAnalyzer: React.FC<RealTimeAnalyzerProps> = ({ camera, onBack }) =
         audio: false
       });
       
+      console.log('Webcam stream obtained successfully');
       setStream(mediaStream);
       setIsStreaming(true);
       setError(null);
       
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
+        console.log('Video element updated with stream');
       }
     } catch (err) {
       console.error('Error accessing webcam:', err);
@@ -123,13 +126,49 @@ const RealTimeAnalyzer: React.FC<RealTimeAnalyzerProps> = ({ camera, onBack }) =
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
+  
+    const analyzeFrame = async () => {
+      console.log('analyzeFrame called - video:', !!videoRef.current, 'canvas:', !!canvasRef.current);
+      if (!videoRef.current || !canvasRef.current) return;
+  
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+  
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const base64Image = canvas.toDataURL("image/jpeg").split(",")[1];
+      console.log('Base64 image captured, length:', base64Image.length);
+  
+      try {
+        console.log('Sending API request to backend...');
+        const response = await fetch('http://localhost:8000/detection/process', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            base64_image: base64Image,
+            location: camera.location,
+            time: Date.now()
+          }),
+        });
+  
+        const result = await response.json();
+        console.log('AI result:', result);
+      } catch (err) {
+        console.error('Error analyzing frame:', err);
+      }
+    };
+  
     if (isAnalyzing) {
       interval = setInterval(() => {
         setCurrentTime(prev => prev + 0.1);
-      }, 100);
+        analyzeFrame();
+      }, 1000);
     }
+  
     return () => clearInterval(interval);
   }, [isAnalyzing]);
+  
 
   const startAnalysis = () => {
     setIsAnalyzing(true);
@@ -223,13 +262,21 @@ const RealTimeAnalyzer: React.FC<RealTimeAnalyzerProps> = ({ camera, onBack }) =
             ) : (
               <div className="live-video-feed">
                 {isStreaming ? (
-                  <video
-                    ref={videoRef}
-                    autoPlay
-                    playsInline
-                    muted
-                    className="analyzer-video"
-                  />
+                  <>
+                    <video
+                      ref={videoRef}
+                      autoPlay
+                      playsInline
+                      muted
+                      className="analyzer-video"
+                    />
+                    <canvas
+                      ref={canvasRef}
+                      style={{ display: 'none' }}
+                      width={1280}
+                      height={720}
+                    />
+                  </>
                 ) : (
                   <div className="video-placeholder">
                     <div className="video-content">
