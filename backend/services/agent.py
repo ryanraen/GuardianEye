@@ -46,14 +46,14 @@ def ambiguous_detector(frame: bytes) -> dict:
                 }
             ]
             
-            agent = Agent(
+            with Agent(
                 model=model,
                 system_prompt="""
                 You are an AI home safety agent. 
                 You received the following vision data with context.
                 Based on what you see, describe if this looks like a risk or normal behavior and indicate the level of emergency as either high, medium, or low.
                 Respond concisely and suggest one next step.
-                Return only output a list of dict:
+                Return only a list of dict:
                 [
                     {"incident": "Water spill",
                      "emergency_level": "low",
@@ -67,9 +67,9 @@ def ambiguous_detector(frame: bytes) -> dict:
                 Note: if there is no incident and behavior is normal, incident should be "None", emergency_level should be "None", summary should be "Everything is normal.", and suggestions should be "No actions needed."
                 """,
                 messages=initial_messages
-                )
-            result = agent("Please analyze this image.")
-            return result.message
+                ) as agent:
+                result = agent("Please analyze this image.")
+                return str(result.message)
                 
     except Exception as e:
         print("SERVER CONNECTION FAILED: " + str(e.with_traceback(None)))
