@@ -53,8 +53,5 @@ class FallDetector:
             for _, i in self.last_positions[:-2]:
                 print(str(i))
             if upright_recent:
-                now = time.time()
-                if now - self.last_fall_time > 5:  # prevent duplicate alerts
-                    self.last_fall_time = now
                 return True
         return False
