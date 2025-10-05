@@ -14,7 +14,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, onDismiss }) =
   // Enhanced event data with more specific incident types and AI analysis
   const enhancedEvent = {
     ...event,
-    incidentType: getIncidentType(event.type),
+    incidentType: getIncidentType(event),
     aiSummary: getAISummary(event),
     suggestions: getSuggestions(event)
   }
@@ -30,22 +30,77 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, onDismiss }) =
   }
 
 
-  function getIncidentType(eventType: string): string {
-    switch (eventType) {
+  function getIncidentType(event: Event): string {
+    // For AI-generated events, try to extract incident name from description
+    if (event.id.startsWith('ai-')) {
+      // Look for common incident patterns in the description
+      const description = event.description.toLowerCase();
+      
+      if (description.includes('fallen') || description.includes('fall')) {
+        return 'Person Fall Incident';
+      }
+      if (description.includes('fire') || description.includes('smoke')) {
+        return 'Fire/Smoke Detected';
+      }
+      if (description.includes('medical') || description.includes('emergency')) {
+        return 'Medical Emergency';
+      }
+      if (description.includes('injury') || description.includes('hurt')) {
+        return 'Injury Detected';
+      }
+      if (description.includes('distress') || description.includes('help')) {
+        return 'Person in Distress';
+      }
+      if (description.includes('unusual') || description.includes('suspicious')) {
+        return 'Unusual Activity Detected';
+      }
+      
+      // Fallback: try to extract from event type or use description
+      if (event.type && event.type !== 'medical' && event.type !== 'unknown incident') {
+        return event.type.split(' ').map(word => 
+          word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        ).join(' ');
+      }
+      
+      // Last resort: use first part of description
+      const firstSentence = event.description.split('.')[0];
+      return firstSentence.length > 50 ? 'Safety Alert' : firstSentence;
+    }
+    
+    // For regular events, use the existing mapping
+    switch (event.type) {
       case 'hazard':
         return 'Water Spill Detected'
       case 'fall':
+      case 'person fallen':
         return 'Person Fall Incident'
       case 'medical':
         return 'Medical Emergency'
       case 'security':
         return 'Unauthorized Access'
+      case 'fire':
+      case 'smoke':
+        return 'Fire/Smoke Detected'
+      case 'intrusion':
+        return 'Unauthorized Access'
+      case 'injury':
+        return 'Injury Detected'
+      case 'distress':
+        return 'Person in Distress'
+      case 'unusual activity':
+        return 'Unusual Activity Detected'
       default:
-        return 'Unknown Incident'
+        return 'Safety Alert'
     }
   }
 
   function getAISummary(event: Event): string {
+    // For AI-generated events, use the actual AI summary from the API
+    if (event.id.startsWith('ai-') && event.aiSummary) {
+      return event.aiSummary;
+    }
+    
+    // For regular events, use mock data
     switch (event.type) {
       case 'hazard':
         return 'AI analysis detected a significant water spill on the kitchen floor. The spill appears to be approximately 2-3 feet in diameter and is spreading toward the dining area. Risk assessment indicates high potential for slip-and-fall accidents. The liquid appears clear and odorless, suggesting it may be water from a leak or spilled beverage.'
@@ -61,6 +116,19 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, onDismiss }) =
   }
 
   function getSuggestions(event: Event): string[] {
+    // For AI-generated events, use the actual AI suggestion from the API
+    if (event.id.startsWith('ai-') && event.aiSuggestion) {
+      // Split the suggestion into individual recommendations if it contains multiple sentences
+      const suggestions = event.aiSuggestion
+        .split(/[.!?]+/)
+        .map(s => s.trim())
+        .filter(s => s.length > 0)
+        .map(s => s.charAt(0).toUpperCase() + s.slice(1)); // Capitalize first letter
+      
+      return suggestions.length > 0 ? suggestions : [event.aiSuggestion];
+    }
+    
+    // For regular events, use mock data
     switch (event.type) {
       case 'hazard':
         return [
@@ -101,8 +169,20 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, onDismiss }) =
 
   const handlePlayVideo = () => {
     setIsVideoPlaying(true)
-    // In a real app, this would play the actual cached video clip
     console.log('Playing cached video clip for event:', event.id)
+    console.log('Video clip URL:', event.videoClipUrl)
+    
+    // Test if the URL is accessible
+    if (event.videoClipUrl) {
+      fetch(event.videoClipUrl)
+        .then(response => {
+          console.log('Video URL fetch response:', response.status, response.statusText)
+          console.log('Video URL fetch headers:', response.headers)
+        })
+        .catch(error => {
+          console.error('Video URL fetch error:', error)
+        })
+    }
   }
 
   return (
@@ -126,23 +206,42 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, onDismiss }) =
           <div className="video-container">
             {isVideoPlaying ? (
               <div className="video-player">
-                <div className="video-placeholder">
-                  <div className="video-content">
-                    <div className="video-icon">🎥</div>
-                    <p>Playing cached clip...</p>
-                    <p className="event-location">{event.location}</p>
-                    <p className="video-note">5-second clip from {event.timestamp}</p>
+                {event.videoClipUrl ? (
+                  <img
+                    src={event.videoClipUrl}
+                    alt="Detection moment"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      borderRadius: '8px'
+                    }}
+                    onError={(e) => {
+                      console.error('Image load error:', e)
+                      console.error('Image src:', event.videoClipUrl)
+                      setIsVideoPlaying(false)
+                    }}
+                    onLoad={() => console.log('Image loaded successfully')}
+                  />
+                ) : (
+                  <div className="video-placeholder">
+                    <div className="video-content">
+                      <div className="video-icon">🎥</div>
+                      <p>Playing cached clip...</p>
+                      <p className="event-location">{event.location}</p>
+                      <p className="video-note">5-second clip from {event.timestamp}</p>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             ) : (
               <div className="video-thumbnail" onClick={handlePlayVideo}>
                 <div className="thumbnail-content">
                   <div className="play-button">▶️</div>
                   <div className="video-icon">🎥</div>
-                  <p>Click to play cached clip</p>
+                  <p>{event.videoClipUrl ? 'Click to view detection moment' : 'No image available'}</p>
                   <p className="event-location">{event.location}</p>
-                  <p className="video-note">5-second clip from {event.timestamp}</p>
+                  <p className="video-note">Moment captured at {event.timestamp}</p>
                 </div>
               </div>
             )}

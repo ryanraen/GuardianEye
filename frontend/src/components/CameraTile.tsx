@@ -51,12 +51,12 @@ const CameraTile: React.FC<CameraTileProps> = ({ camera, onClick }) => {
       )
     }
 
-    // Show video with pose detection for Living Room camera (cam1), pattern for others
+    // Show webcam with pose detection for Living Room camera (cam1 - top-left)
     if (camera.id === 'cam1') {
       return (
         <div className="camera-feed active">
           <PoseDetector
-            videoSrc="/placeholder-video.mp4"
+            videoSrc={null} // null means use webcam
             style={{
               width: '100%',
               height: '100%'
@@ -68,12 +68,17 @@ const CameraTile: React.FC<CameraTileProps> = ({ camera, onClick }) => {
       )
     }
 
-    // Active camera - mock video feed
+    // Show video with pose detection for all other cameras
     return (
       <div className="camera-feed active">
-        <div className="mock-video">
-          <div className="video-overlay">
-          </div>
+        <PoseDetector
+          videoSrc="/placeholder-video.mp4"
+          style={{
+            width: '100%',
+            height: '100%'
+          }}
+        />
+        <div className="video-overlay">
         </div>
       </div>
     )

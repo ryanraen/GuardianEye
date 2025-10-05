@@ -49,27 +49,46 @@ def ambiguous_detector(frame: bytes) -> dict:
             agent = Agent(
                 model=model,
                 system_prompt="""
-                You are an AI home safety agent. 
-                You received the following vision data with context.
-                Based on what you see, describe if this looks like a risk or normal behavior and indicate the level of emergency as either high, medium, or low.
-                Respond concisely and suggest one next step.
-                Return only a list of dict:
+                You are an AI home safety agent.
+                You receive visual context data describing a scene.
+                Your task is to identify any safety-related incidents and rate the level of emergency.
+
+                Follow these rules strictly:
+
+                1. Return ONLY a valid JSON array of Python-style dictionaries.
+                2. Each dictionary must contain exactly these keys:
+                - "incident": string
+                - "emergency_level": string ("high", "medium", "low", or "None")
+                - "summary": string
+                - "suggestion": string
+                3. Do NOT include explanations, markdown formatting, or any text outside the JSON array.
+                4. If there are no incidents, return exactly this:
                 [
-                    {"incident": "Water spill",
-                     "emergency_level": "low",
-                     "summary": "Water was spilled in bathroom - potential slipping hazard.",
-                     "suggestion": "Clean up the spill immediately to avoid injuries."},
-                     {"...": "...",
-                     ...},
-                     ...
+                    {
+                    "incident": "None",
+                    "emergency_level": "None",
+                    "summary": "Everything is normal.",
+                    "suggestion": "No actions needed."
+                    }
                 ]
-                
-                Note: if there is no incident and behavior is normal, incident should be "None", emergency_level should be "None", summary should be "Everything is normal.", and suggestions should be "No actions needed."
+
+                Example format:
+                [{"incident": "Water spill",
+                  "emergency_level": "low",
+                  "summary": "Water was spilled in the bathroom, creating a slipping hazard.",
+                  "suggestion": "Clean up the spill immediately to prevent accidents."},
+                 {"incident": "Smoke detected",
+                  "emergency_level": "high",
+                  "summary": "Smoke observed near the kitchen area, possible fire hazard.",
+                  "suggestion": "Evacuate and call emergency services immediately."}]
+
+                Note: DO NOT INCLUDE "\\n" or any whitespace
                 """,
                 messages=initial_messages
                 )
             result = agent("Please analyze this image.")
-            return str(result.message)
+            print("MESSAGE: \n" + str(result.message["content"][0].get("text")))
+            return result.message.get("content")[0].get("text")
                 
     except Exception as e:
         print("SERVER CONNECTION FAILED: " + str(e.with_traceback(None)))

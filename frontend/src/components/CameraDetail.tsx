@@ -6,12 +6,30 @@ import './CameraDetail.css'
 interface CameraDetailProps {
   camera: Camera
   onBack: () => void
+  onAIDetection: (result: any, location: string, videoClip?: Blob) => void
 }
 
-const CameraDetail: React.FC<CameraDetailProps> = ({ camera, onBack }) => {
+const CameraDetail: React.FC<CameraDetailProps> = ({ camera, onBack, onAIDetection }) => {
   const [showMesh, setShowMesh] = useState(true)
+  const [aiAlerts, setAiAlerts] = useState<any[]>([])
   
-  // Mock AI summary data
+  // Handle AI detection results
+  const handleAIDetection = (result: any, videoClip?: Blob) => {
+    console.log('AI Detection received:', result)
+    console.log('Video clip received:', videoClip)
+    
+    // Call parent's onAIDetection to create new event and navigate
+    onAIDetection(result, camera.location, videoClip)
+    
+    // Also keep local alerts for display
+    setAiAlerts(prev => [...prev, {
+      ...result,
+      timestamp: new Date().toLocaleTimeString(),
+      id: Date.now()
+    }])
+  }
+
+  // Mock AI summary data (will be replaced with real AI analysis)
   const aiSummary = {
     currentActivity: 'Person walking from kitchen to living room',
     riskLevel: 'Low',
@@ -32,12 +50,19 @@ const CameraDetail: React.FC<CameraDetailProps> = ({ camera, onBack }) => {
 
   // Render the video feed based on camera ID
   const renderVideoFeed = () => {
-    // Show the placeholder video with pose detection for Living Room camera
+    // Show webcam with pose detection for Living Room camera (cam1 - top-left)
     if (camera.id === 'cam1') {
       return (
         <PoseDetector
-          videoSrc="/placeholder-video.mp4"
+          videoSrc={null} // null means use webcam
           showMesh={showMesh}
+          location={camera.location}
+          onDetection={handleAIDetection}
+          onVideoCache={(videoClip) => {
+            // Store the video clip for this detection
+            console.log('Video clip cached for event:', videoClip)
+            // The video clip will be passed to handleAIDetection when detection occurs
+          }}
           style={{
             width: '100%',
             height: '100%',
@@ -47,18 +72,19 @@ const CameraDetail: React.FC<CameraDetailProps> = ({ camera, onBack }) => {
       )
     }
 
-    // Show placeholder for other cameras
+    // Show the placeholder video with pose detection for all other cameras
     return (
-      <div className="live-feed-placeholder">
-        <div className="feed-placeholder-content">
-          <div className="feed-icon">📹</div>
-          <p>Live Feed</p>
-          <p className="camera-location">{camera.location}</p>
-          <p className="placeholder-note">
-            Camera feed placeholder - video stream would appear here
-          </p>
-        </div>
-      </div>
+      <PoseDetector
+        videoSrc="/placeholder-video.mp4"
+        showMesh={showMesh}
+        location={camera.location}
+        onDetection={handleAIDetection}
+        style={{
+          width: '100%',
+          height: '100%',
+          borderRadius: '8px'
+        }}
+      />
     )
   }
 
@@ -134,6 +160,32 @@ const CameraDetail: React.FC<CameraDetailProps> = ({ camera, onBack }) => {
             </div>
           </div>
         </div>
+
+        {/* AI Detection Alerts */}
+        {aiAlerts.length > 0 && (
+          <div className="ai-alerts-section">
+            <h2 className="section-title">🚨 AI DETECTION ALERTS</h2>
+            <div className="alerts-list">
+              {aiAlerts.slice(-3).map((alert) => (
+                <div key={alert.id} className="alert-item">
+                  <div className="alert-header">
+                    <span className="alert-time">{alert.timestamp}</span>
+                    <span className={`alert-severity ${alert.danger ? 'danger' : 'warning'}`}>
+                      {alert.danger ? 'HIGH RISK' : 'CAUTION'}
+                    </span>
+                  </div>
+                  {alert.detections?.map((detection: any, idx: number) => (
+                    <div key={idx} className="detection-item">
+                      <p><strong>{detection.incident}</strong></p>
+                      <p>{detection.summary}</p>
+                      <p className="suggestion">{detection.suggestion}</p>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
