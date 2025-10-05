@@ -8,4 +8,7 @@ dependencies = [
     "dotenv>=0.9.9",
     "google-genai>=1.41.0",
     "mediapipe>=0.10.21",
+    "strands-agents>=1.10.0",
+    "strands-agents-tools>=0.2.9",
+    "ultralytics>=8.3.204",
 ]
