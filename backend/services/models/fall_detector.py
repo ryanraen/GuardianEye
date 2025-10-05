@@ -4,6 +4,7 @@ import numpy as np
 import time
 
 mp_pose = mp.solutions.pose
+FALLEN_THRESHOLD = 40
 
 class FallDetector:
     def __init__(self):
@@ -26,15 +27,18 @@ class FallDetector:
         # Extract key landmarks
         lm = results.pose_landmarks.landmark
         left_shoulder = lm[mp_pose.PoseLandmark.LEFT_SHOULDER]
-        left_hip = lm[mp_pose.PoseLandmark.LEFT_HIP]
+        right_shoulder = lm[mp_pose.PoseLandmark.RIGHT_SHOULDER]
         left_ankle = lm[mp_pose.PoseLandmark.LEFT_ANKLE]
+        right_ankle = lm[mp_pose.PoseLandmark.RIGHT_ANKLE]
 
-        # Calculate body angle (shoulder–hip–ankle)
-        dy = left_shoulder.y - left_ankle.y
-        dx = left_shoulder.x - left_ankle.x
-        angle = np.arctan2(dy, dx) * 180 / np.pi  # degrees
+        # Calculate body angle (shoulder–ankle)
+        dy_left = left_shoulder.y - left_ankle.y
+        dy_right = right_shoulder.y - right_ankle.y
+        dx_left = left_shoulder.x - left_ankle.x
+        dx_right = right_shoulder.x - right_ankle.x
+        angle = min(np.arctan2(abs(dy_left), abs(dx_left)), np.arctan2(abs(dy_right), abs(dx_right))) * 180 / np.pi  # POSITIVE degrees
         
-        print("\n\nAngle: " + angle + "\n\n")
+        print("\n\nAngle: " + str(angle) + "\n\n")
 
         # Save posture history (optional)
         self.last_positions.append((time.time(), angle))
@@ -42,12 +46,16 @@ class FallDetector:
 
         # Heuristic: if body angle is near horizontal and was recently upright
         # angle ~ 90° = standing, angle ~ 0° = lying down
-        if angle < 30:
+        if angle < FALLEN_THRESHOLD:
             # Check if they were upright recently
-            upright_recent = any(a > 60 for _, a in self.last_positions[:-2])
+            upright_recent = any(a > 60 for _, a in self.last_positions[-3: -1])
+            for _, i in self.last_positions[:-2]:
+                print(str(i))
             if upright_recent:
                 now = time.time()
                 if now - self.last_fall_time > 5:  # prevent duplicate alerts
                     self.last_fall_time = now
-                    return 0.9  # confidence
+                return "FALLEN"
+        else:
+            print("UPRIGHT")
         return None
