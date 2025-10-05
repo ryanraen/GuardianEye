@@ -48,28 +48,3 @@ def process_image(frame: str, context: dict) -> list:
     results.extend(response)
     
     return json.dumps(results)
-    
-    # # Convert base64 string to bytes for processing
-    # frame_bytes = base64.b64decode(frame)
-    
-    # fall_detection = detect_fall(frame_bytes)
-    # if fall_detection:
-    #     fall_analysis = get_llm_analysis(frame, "fall")
-    #     results.append({
-    #         "incident": "fall",
-    #         "emergency level": "high",
-    #         "summary": fall_analysis
-    #     })
-    # fire_and_smoke_detection = detect_fire_and_smoke(frame_bytes)
-    # if len(fire_and_smoke_detection) > 0:
-    #     fire_analysis = get_llm_analysis(frame, "fire")
-    #     results.append({
-    #         "incident": "fire/smoke",
-    #         "emergency level": "high",
-    #         "summary": fire_analysis
-    #     })
-    # if not(fall_detection) and len(fire_and_smoke_detection) == 0:
-    #     llm_analysis = get_llm_analysis(frame)
-    #     results.append(llm_analysis)
-        
-    # return results
