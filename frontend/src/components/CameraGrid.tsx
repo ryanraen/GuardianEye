@@ -5,17 +5,17 @@ import './CameraGrid.css'
 
 interface CameraGridProps {
   cameras: Camera[]
-  onCameraDoubleClick?: (camera: Camera) => void
+  onCameraSelect: (camera: Camera) => void
 }
 
-const CameraGrid: React.FC<CameraGridProps> = ({ cameras, onCameraDoubleClick }) => {
+const CameraGrid: React.FC<CameraGridProps> = ({ cameras, onCameraSelect }) => {
   return (
     <div className="camera-grid">
       {cameras.map((camera) => (
         <CameraTile 
           key={camera.id} 
           camera={camera} 
-          onDoubleClick={onCameraDoubleClick}
+          onClick={() => onCameraSelect(camera)}
         />
       ))}
     </div>

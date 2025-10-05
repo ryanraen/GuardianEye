@@ -2,6 +2,7 @@ import React from 'react'
 import './Header.css'
 
 const Header: React.FC = () => {
+
   const getCurrentDateTime = () => {
     const now = new Date()
     const time = now.toLocaleTimeString('en-US', { 
@@ -9,10 +10,11 @@ const Header: React.FC = () => {
       hour: '2-digit', 
       minute: '2-digit', 
       second: '2-digit'
-    }) + '.' + now.getMilliseconds().toString().padStart(3, '0')
+    })
     const date = now.toLocaleDateString('en-CA') // YYYY-MM-DD format
     return { time, date }
   }
+
 
   const { time, date } = getCurrentDateTime()
 
@@ -20,8 +22,8 @@ const Header: React.FC = () => {
     <header className="header">
       <div className="header-content">
         <div className="logo-section">
-          <h1 className="logo">GuardianEye</h1>
-          <div className="tagline">AI Vision Agent for Elderly Safety</div>
+          <h1 className="logo">GUARDIAN EYE</h1>
+          <p className="slogan">AI Vision Agent for Elderly Safety</p>
         </div>
         <nav className="navigation">
           <a href="#" className="nav-link">🏠 Home</a>

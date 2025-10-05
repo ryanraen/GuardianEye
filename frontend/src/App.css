@@ -1,29 +1,14 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-  background-color: #1a1a1a;
-  color: #ffffff;
-  overflow: hidden;
-}
-
 .app {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  background-color: #1a1a1a;
 }
 
 .main-content {
   display: flex;
   flex: 1;
-  overflow: hidden;
-  background-color: #2a2a2a;
+  min-height: 0;
 }
 
 .content-area {
@@ -31,33 +16,38 @@ body {
   display: flex;
   flex-direction: column;
   position: relative;
-  padding: 24px;
-  gap: 24px;
-  background-color: #2a2a2a;
+  padding: 20px;
+  gap: 20px;
+  min-height: 0;
+  overflow-y: auto;
 }
 
-.safety-banner {
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(68, 255, 68, 0.1) 100%);
-  border: 1px solid rgba(0, 212, 255, 0.3);
-  border-radius: 8px;
-  padding: 12px 20px;
-  margin-bottom: 8px;
+/* Custom scrollbar styling for content area */
+.content-area::-webkit-scrollbar {
+  width: 6px;
 }
 
-.banner-content {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  justify-content: center;
+.content-area::-webkit-scrollbar-track {
+  background: #1a1a1a;
+  border-radius: 3px;
 }
 
-.banner-icon {
-  font-size: 18px;
+.content-area::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+  transition: background 0.2s ease;
 }
 
-.banner-text {
-  color: #e0e0e0;
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
+.content-area::-webkit-scrollbar-thumb:hover {
+  background: #444;
+}
+
+.content-area::-webkit-scrollbar-thumb:active {
+  background: #555;
+}
+
+/* Firefox scrollbar styling */
+.content-area {
+  scrollbar-width: thin;
+  scrollbar-color: #333 #1a1a1a;
 }

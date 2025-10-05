@@ -3,8 +3,8 @@ import './App.css';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import CameraGrid from './components/CameraGrid';
-import CameraIndicator from './components/CameraIndicator';
-import RealTimeAnalyzer from './components/RealTimeAnalyzer';
+import CameraDetail from './components/CameraDetail';
+import EventDetail from './components/EventDetail';
 
 export interface Event {
   id: string;
@@ -26,9 +26,10 @@ export interface Camera {
 const App: React.FC = () => {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [selectedCamera, setSelectedCamera] = useState<Camera | null>(null);
+  const [viewingEventDetail, setViewingEventDetail] = useState<Event | null>(null);
 
   // Mock data - will be replaced with API calls
-  const [events] = useState<Event[]>([
+  const [events, setEvents] = useState<Event[]>([
     {
       id: '1',
       type: 'fall',
@@ -65,28 +66,54 @@ const App: React.FC = () => {
     { id: 'cam4', location: 'Bedroom', status: 'active', lastUpdate: '2025-01-27 14:18:21' },
     { id: 'cam5', location: 'Hallway', status: 'offline', lastUpdate: '2025-01-27 13:45:12' },
     { id: 'cam6', location: 'Garden', status: 'active', lastUpdate: '2025-01-27 14:29:08' },
-    { id: 'cam7', location: 'Dining Room', status: 'active', lastUpdate: '2025-01-27 14:28:15' },
-    { id: 'cam8', location: 'Study Room', status: 'active', lastUpdate: '2025-01-27 14:27:42' },
-    { id: 'cam9', location: 'Laundry Room', status: 'active', lastUpdate: '2025-01-27 14:26:33' },
-    { id: 'cam10', location: 'Garage', status: 'active', lastUpdate: '2025-01-27 14:25:21' },
+    { id: 'cam7', location: 'Dining Room', status: 'active', lastUpdate: '2025-01-27 14:28:45' },
+    { id: 'cam8', location: 'Study Room', status: 'active', lastUpdate: '2025-01-27 14:27:32' },
+    { id: 'cam9', location: 'Laundry Room', status: 'active', lastUpdate: '2025-01-27 14:26:18' },
+    { id: 'cam10', location: 'Garage', status: 'offline', lastUpdate: '2025-01-27 14:25:55' },
     { id: 'cam11', location: 'Front Door', status: 'active', lastUpdate: '2025-01-27 14:24:12' },
-    { id: 'cam12', location: 'Back Door', status: 'offline', lastUpdate: '2025-01-27 13:50:08' }
+    { id: 'cam12', location: 'Back Door', status: 'error', lastUpdate: '2025-01-27 14:23:48' },
+    { id: 'cam13', location: 'Basement', status: 'active', lastUpdate: '2025-01-27 14:22:35' },
+    { id: 'cam14', location: 'Attic', status: 'active', lastUpdate: '2025-01-27 14:21:22' },
+    { id: 'cam15', location: 'Storage Room', status: 'offline', lastUpdate: '2025-01-27 14:20:09' },
+    { id: 'cam16', location: 'Utility Room', status: 'active', lastUpdate: '2025-01-27 14:19:56' }
   ]);
 
-  const handleCameraDoubleClick = (camera: Camera) => {
+  const handleCameraSelect = (camera: Camera) => {
     setSelectedCamera(camera);
   };
 
-  const handleBackToDashboard = () => {
+  const handleBackToGrid = () => {
     setSelectedCamera(null);
   };
 
-  // If a camera is selected, show the Real-Time Analyzer
+  const handleAlertSelect = (event: Event) => {
+    setViewingEventDetail(event);
+  };
+
+  const handleBackToAlerts = () => {
+    setViewingEventDetail(null);
+  };
+
+  const handleDismissAlert = (eventId: string) => {
+    setEvents(prevEvents => prevEvents.filter(event => event.id !== eventId));
+    setViewingEventDetail(null);
+  };
+
+  if (viewingEventDetail) {
+    return (
+        <EventDetail 
+          event={viewingEventDetail} 
+          onBack={handleBackToAlerts}
+          onDismiss={() => handleDismissAlert(viewingEventDetail.id)}
+        />
+    );
+  }
+
   if (selectedCamera) {
     return (
-      <RealTimeAnalyzer 
+      <CameraDetail 
         camera={selectedCamera} 
-        onBack={handleBackToDashboard}
+        onBack={handleBackToGrid}
       />
     );
   }
@@ -97,21 +124,14 @@ const App: React.FC = () => {
       <div className="main-content">
         <Sidebar 
           events={events} 
-          selectedEvent={selectedEvent} 
-          onEventSelect={setSelectedEvent}
+          onEventClick={handleAlertSelect}
+          cameras={cameras}
         />
         <div className="content-area">
-          <div className="safety-banner">
-            <div className="banner-content">
-              <span className="banner-icon">🛡️</span>
-              <span className="banner-text">GuardianEye is actively monitoring for falls, medical emergencies, and safety hazards</span>
-            </div>
-          </div>
           <CameraGrid 
             cameras={cameras} 
-            onCameraDoubleClick={handleCameraDoubleClick}
+            onCameraSelect={handleCameraSelect}
           />
-          <CameraIndicator cameraCount={cameras.filter(c => c.status === 'active').length} />
         </div>
       </div>
     </div>

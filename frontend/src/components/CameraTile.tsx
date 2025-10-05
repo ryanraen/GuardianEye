@@ -1,18 +1,14 @@
 import React, { useRef, useEffect, useState } from 'react'
 import { Camera } from '../App'
+import PoseDetector from './PoseDetector'
 import './CameraTile.css'
 
 interface CameraTileProps {
   camera: Camera
-  onDoubleClick?: (camera: Camera) => void
+  onClick: () => void
 }
 
-const CameraTile: React.FC<CameraTileProps> = ({ camera, onDoubleClick }) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [stream, setStream] = useState<MediaStream | null>(null);
-  const [isStreaming, setIsStreaming] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
+const CameraTile: React.FC<CameraTileProps> = ({ camera, onClick }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return '#44ff44'
@@ -94,39 +90,51 @@ const CameraTile: React.FC<CameraTileProps> = ({ camera, onDoubleClick }) => {
         <div className="camera-feed error">
           <div className="error-overlay">
             <div className="error-icon">⚠️</div>
-            <div className="error-text">{error || 'CONNECTION ERROR'}</div>
-            <button 
-              className="retry-button"
-              onClick={startWebcam}
-              style={{ marginTop: '10px', padding: '5px 10px', fontSize: '12px' }}
-            >
-              Retry Camera
-            </button>
+            <div className="error-text">CONNECTION ERROR</div>
           </div>
         </div>
       )
     }
 
-    // Live webcam feed for active cameras
-    if (camera.status === 'active' && isStreaming && camera.id === 'cam1') {
+    // Show video with pose detection for Living Room camera (cam1), pattern for others
+    if (camera.id === 'cam1') {
       return (
         <div className="camera-feed active">
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            className="live-video"
+          <PoseDetector
+            videoSrc="/placeholder-video.mp4"
+            style={{
+              width: '100%',
+              height: '100%'
+            }}
           />
           <div className="video-overlay">
-            <div className="timestamp">{camera.lastUpdate}</div>
-            <div className="status-indicator">
-              <span 
-                className="status-dot"
-                style={{ backgroundColor: getStatusColor(camera.status) }}
-              ></span>
-              {getStatusText(camera.status)}
-            </div>
+          </div>
+        </div>
+      )
+    }
+
+    // Active camera - mock video feed
+    return (
+      <div className="camera-feed active">
+        <div className="mock-video">
+          <div className="video-overlay">
+          </div>
+        </div>
+      )
+    }
+
+    // Show video with pose detection for Living Room camera (cam1), pattern for others
+    if (camera.id === 'cam1') {
+      return (
+        <div className="camera-feed active">
+          <PoseDetector
+            videoSrc="/placeholder-video.mp4"
+            style={{
+              width: '100%',
+              height: '100%'
+            }}
+          />
+          <div className="video-overlay">
           </div>
         </div>
       )
@@ -137,14 +145,6 @@ const CameraTile: React.FC<CameraTileProps> = ({ camera, onDoubleClick }) => {
       <div className="camera-feed active">
         <div className="mock-video">
           <div className="video-overlay">
-            <div className="timestamp">{camera.lastUpdate}</div>
-            <div className="status-indicator">
-              <span 
-                className="status-dot"
-                style={{ backgroundColor: getStatusColor(camera.status) }}
-              ></span>
-              {getStatusText(camera.status)}
-            </div>
           </div>
         </div>
       </div>
@@ -158,15 +158,11 @@ const CameraTile: React.FC<CameraTileProps> = ({ camera, onDoubleClick }) => {
   };
 
   return (
-    <div 
-      className="camera-tile" 
-      onDoubleClick={handleDoubleClick}
-      style={{ cursor: camera.status === 'active' ? 'pointer' : 'default' }}
-    >
+    <div className="camera-tile" onClick={onClick}>
       <div className="camera-header">
-        <div className="camera-info">
+        <div>
           <h3 className="camera-title">{camera.location}</h3>
-          <div className="camera-location">Senior Care Facility, Room {camera.id.replace('cam', '')}</div>
+          <div className="camera-location">Senior Care Home: Room {camera.id.slice(-1)}</div>
         </div>
         <div className="camera-status">
           <span 
