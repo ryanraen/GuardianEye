@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react'
+import React from 'react'
 import { Camera } from '../App'
 import PoseDetector from './PoseDetector'
 import './CameraTile.css'
@@ -27,52 +27,7 @@ const CameraTile: React.FC<CameraTileProps> = ({ camera, onClick }) => {
     }
   }
 
-  const startWebcam = async () => {
-    try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          width: { ideal: 640 },
-          height: { ideal: 480 },
-          facingMode: 'user'
-        },
-        audio: false
-      });
-      
-      setStream(mediaStream);
-      setIsStreaming(true);
-      setError(null);
-      
-      if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream;
-      }
-    } catch (err) {
-      console.error('Error accessing webcam:', err);
-      setError('Camera access denied');
-      setIsStreaming(false);
-    }
-  };
-
-  const stopWebcam = () => {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-      setStream(null);
-      setIsStreaming(false);
-    }
-  };
-
-  useEffect(() => {
-    if (camera.status === 'active' && camera.id === 'cam1') {
-      startWebcam();
-    } else {
-      stopWebcam();
-    }
-
-    return () => {
-      stopWebcam();
-    };
-  }, [camera.status, camera.id]);
-
-  // Live camera feed rendering
+  // Mock camera feed - in real app this would be a video stream
   const renderCameraFeed = () => {
     if (camera.status === 'offline') {
       return (
@@ -85,7 +40,7 @@ const CameraTile: React.FC<CameraTileProps> = ({ camera, onClick }) => {
       )
     }
 
-    if (camera.status === 'error' || error) {
+    if (camera.status === 'error') {
       return (
         <div className="camera-feed error">
           <div className="error-overlay">
@@ -120,42 +75,9 @@ const CameraTile: React.FC<CameraTileProps> = ({ camera, onClick }) => {
           <div className="video-overlay">
           </div>
         </div>
-      )
-    }
-
-    // Show video with pose detection for Living Room camera (cam1), pattern for others
-    if (camera.id === 'cam1') {
-      return (
-        <div className="camera-feed active">
-          <PoseDetector
-            videoSrc="/placeholder-video.mp4"
-            style={{
-              width: '100%',
-              height: '100%'
-            }}
-          />
-          <div className="video-overlay">
-          </div>
-        </div>
-      )
-    }
-
-    // Mock video feed for other cameras
-    return (
-      <div className="camera-feed active">
-        <div className="mock-video">
-          <div className="video-overlay">
-          </div>
-        </div>
       </div>
     )
   }
-
-  const handleDoubleClick = () => {
-    if (onDoubleClick && camera.status === 'active') {
-      onDoubleClick(camera);
-    }
-  };
 
   return (
     <div className="camera-tile" onClick={onClick}>
@@ -174,11 +96,6 @@ const CameraTile: React.FC<CameraTileProps> = ({ camera, onClick }) => {
       </div>
       <div className="camera-body">
         {renderCameraFeed()}
-        {camera.status === 'active' && (
-          <div className="double-click-hint">
-            Double-click to analyze
-          </div>
-        )}
       </div>
     </div>
   )

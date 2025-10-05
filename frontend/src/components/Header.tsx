@@ -25,18 +25,9 @@ const Header: React.FC = () => {
           <h1 className="logo">GUARDIAN EYE</h1>
           <p className="slogan">AI Vision Agent for Elderly Safety</p>
         </div>
-        <nav className="navigation">
-          <a href="#" className="nav-link">🏠 Home</a>
-          <a href="#" className="nav-link active">👁️ Monitor</a>
-          <a href="#" className="nav-link">📊 Analytics</a>
-          <a href="#" className="nav-link">⚙️ Settings</a>
-        </nav>
-        <div className="user-section">
-          <span className="user-greeting">Monitoring: Senior Care Facility</span>
-          <div className="datetime-section">
-            <span className="time">{time}</span>
-            <span className="date">{date}</span>
-          </div>
+        <div className="datetime-section">
+          <span className="time">{time}</span>
+          <span className="date">{date}</span>
         </div>
       </div>
     </header>

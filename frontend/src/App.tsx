@@ -32,29 +32,29 @@ const App: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([
     {
       id: '1',
-      type: 'fall',
-      severity: 'critical',
+      type: 'hazard',
+      severity: 'high',
       timestamp: '2025-01-27 14:30:15',
       location: 'Living Room',
-      description: 'Elderly resident fall detected - immediate medical attention required',
+      description: 'Slippery surface detected - potential fall risk',
       cameraId: 'cam1'
     },
     {
       id: '2',
-      type: 'medical',
-      severity: 'high',
+      type: 'fall',
+      severity: 'critical',
       timestamp: '2025-01-27 14:25:42',
       location: 'Kitchen',
-      description: 'Unusual movement pattern - potential medical emergency',
+      description: 'Fall detected - immediate attention required',
       cameraId: 'cam2'
     },
     {
       id: '3',
-      type: 'hazard',
+      type: 'medical',
       severity: 'medium',
       timestamp: '2025-01-27 14:20:33',
-      location: 'Bathroom',
-      description: 'Slippery surface detected - fall risk assessment needed',
+      location: 'Bedroom',
+      description: 'Unusual movement pattern detected',
       cameraId: 'cam3'
     }
   ]);
@@ -62,8 +62,8 @@ const App: React.FC = () => {
   const [cameras] = useState<Camera[]>([
     { id: 'cam1', location: 'Living Room', status: 'active', lastUpdate: '2025-01-27 14:30:15' },
     { id: 'cam2', location: 'Kitchen', status: 'active', lastUpdate: '2025-01-27 14:25:42' },
-    { id: 'cam3', location: 'Bathroom', status: 'active', lastUpdate: '2025-01-27 14:20:33' },
-    { id: 'cam4', location: 'Bedroom', status: 'active', lastUpdate: '2025-01-27 14:18:21' },
+    { id: 'cam3', location: 'Bedroom', status: 'active', lastUpdate: '2025-01-27 14:20:33' },
+    { id: 'cam4', location: 'Bathroom', status: 'active', lastUpdate: '2025-01-27 14:18:21' },
     { id: 'cam5', location: 'Hallway', status: 'offline', lastUpdate: '2025-01-27 13:45:12' },
     { id: 'cam6', location: 'Garden', status: 'active', lastUpdate: '2025-01-27 14:29:08' },
     { id: 'cam7', location: 'Dining Room', status: 'active', lastUpdate: '2025-01-27 14:28:45' },

@@ -37,16 +37,10 @@ const Sidebar: React.FC<SidebarProps> = ({ events, onEventClick, cameras }) => {
                   style={{ backgroundColor: getSeverityColor(event.severity) }}
                 ></span>
               </div>
-              <div className="event-description">{getEventDescription(event)}</div>
-              <div className="event-location">{event.location}</div>
-              <div className="event-time">{getTimeAgo(event.timestamp)}</div>
-              <div className="event-actions">
-                <button className="action-button dismiss-button">
-                  ✓ Acknowledge
-                </button>
-                <button className="action-button alert-button">
-                  🚑 Call Caregiver
-                </button>
+              <div className="event-details">
+                <div className="event-type">{event.type.toUpperCase()}</div>
+                <div className="event-location">{event.location}</div>
+                <div className="event-time">{event.timestamp}</div>
               </div>
             </div>
           ))}
