@@ -1,8 +1,10 @@
 .header {
-  background-color: #2a2a2a;
-  border-bottom: 1px solid #444;
-  padding: 15px 30px;
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+  background-color: #1a1a1a;
+  border-bottom: 1px solid #333;
+  padding: 16px 32px;
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  position: relative;
+  z-index: 10;
 }
 
 .header-content {
@@ -15,31 +17,103 @@
 .logo-section {
   flex: 1;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .logo {
-  color: #e0e0e0;
+  color: #00d4ff;
   font-size: 24px;
-  font-weight: bold;
+  font-weight: 700;
   letter-spacing: 2px;
   margin: 0;
+  text-transform: uppercase;
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+}
+
+.tagline {
+  color: #b0b0b0;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+  font-style: italic;
 }
 
 .datetime-section {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 5px;
+  gap: 2px;
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .time {
   color: #e0e0e0;
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 1px;
 }
 
 .date {
-  color: #e0e0e0;
+  color: #b0b0b0;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.navigation {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.nav-link {
+  color: #b0b0b0;
+  text-decoration: none;
   font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-link:hover {
+  color: #ffffff;
+}
+
+.nav-link.active {
+  color: #00d4ff;
+  font-weight: 600;
+}
+
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-greeting {
+  color: #b0b0b0;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.signout-button {
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.signout-button:hover {
+  background-color: #333;
+  border-color: #555;
 }

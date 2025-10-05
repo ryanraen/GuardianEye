@@ -21,18 +21,35 @@ const Sidebar: React.FC<SidebarProps> = ({ events, selectedEvent, onEventSelect 
 
   const getEventIcon = (type: string) => {
     switch (type) {
-      case 'hazard': return '⚠️'
       case 'fall': return '🚨'
       case 'medical': return '🏥'
+      case 'hazard': return '⚠️'
       case 'security': return '🔒'
       default: return '📋'
     }
   }
 
+  const getEventDescription = (event: Event) => {
+    switch (event.type) {
+      case 'fall': return 'Fall detected - immediate attention required'
+      case 'medical': return 'Medical emergency - assistance needed'
+      case 'hazard': return 'Safety hazard detected - potential risk'
+      case 'security': return 'Unauthorized access or security concern'
+      default: return event.description
+    }
+  }
+
+  const getTimeAgo = (timestamp: string) => {
+    const now = new Date()
+    const eventTime = new Date(timestamp)
+    const diffSeconds = Math.floor((now.getTime() - eventTime.getTime()) / 1000)
+    return `${diffSeconds}s ago`
+  }
+
   return (
     <div className="sidebar">
       <div className="sidebar-section">
-        <h2 className="section-title">EVENTS LOG</h2>
+        <h2 className="section-title">SAFETY ALERTS</h2>
         <div className="events-list">
           {events.map((event) => (
             <div
@@ -42,15 +59,18 @@ const Sidebar: React.FC<SidebarProps> = ({ events, selectedEvent, onEventSelect 
             >
               <div className="event-header">
                 <span className="event-icon">{getEventIcon(event.type)}</span>
-                <span 
-                  className="severity-indicator"
-                  style={{ backgroundColor: getSeverityColor(event.severity) }}
-                ></span>
+                <span className="event-type">{event.type.toUpperCase()}</span>
               </div>
-              <div className="event-details">
-                <div className="event-type">{event.type.toUpperCase()}</div>
-                <div className="event-location">{event.location}</div>
-                <div className="event-time">{event.timestamp}</div>
+              <div className="event-description">{getEventDescription(event)}</div>
+              <div className="event-location">{event.location}</div>
+              <div className="event-time">{getTimeAgo(event.timestamp)}</div>
+              <div className="event-actions">
+                <button className="action-button dismiss-button">
+                  ✓ Acknowledge
+                </button>
+                <button className="action-button alert-button">
+                  🚑 Call Caregiver
+                </button>
               </div>
             </div>
           ))}
@@ -58,13 +78,13 @@ const Sidebar: React.FC<SidebarProps> = ({ events, selectedEvent, onEventSelect 
       </div>
 
       <div className="sidebar-section">
-        <h2 className="section-title">SUMMARY</h2>
+        <h2 className="section-title">PATIENT SUMMARY</h2>
         <div className="summary-content">
           {selectedEvent ? (
             <div className="event-summary">
               <div className="summary-header">
                 <span className="summary-icon">{getEventIcon(selectedEvent.type)}</span>
-                <span className="summary-type">{selectedEvent.type.toUpperCase()} EVENT</span>
+                <span className="summary-type">{selectedEvent.type.toUpperCase()} ALERT</span>
               </div>
               <div className="summary-details">
                 <p><strong>Location:</strong> {selectedEvent.location}</p>
@@ -81,7 +101,7 @@ const Sidebar: React.FC<SidebarProps> = ({ events, selectedEvent, onEventSelect 
             </div>
           ) : (
             <div className="no-selection">
-              <p>Select an event from the log to view details</p>
+              <p>Select a safety alert to view patient details</p>
             </div>
           )}
         </div>

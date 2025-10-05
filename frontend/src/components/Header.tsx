@@ -20,11 +20,21 @@ const Header: React.FC = () => {
     <header className="header">
       <div className="header-content">
         <div className="logo-section">
-          <h1 className="logo">GUARDIAN EYE</h1>
+          <h1 className="logo">GuardianEye</h1>
+          <div className="tagline">AI Vision Agent for Elderly Safety</div>
         </div>
-        <div className="datetime-section">
-          <span className="time">{time}</span>
-          <span className="date">{date}</span>
+        <nav className="navigation">
+          <a href="#" className="nav-link">🏠 Home</a>
+          <a href="#" className="nav-link active">👁️ Monitor</a>
+          <a href="#" className="nav-link">📊 Analytics</a>
+          <a href="#" className="nav-link">⚙️ Settings</a>
+        </nav>
+        <div className="user-section">
+          <span className="user-greeting">Monitoring: Senior Care Facility</span>
+          <div className="datetime-section">
+            <span className="time">{time}</span>
+            <span className="date">{date}</span>
+          </div>
         </div>
       </div>
     </header>
