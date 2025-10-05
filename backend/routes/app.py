@@ -6,9 +6,8 @@ import cv2
 import uvicorn
 import numpy as np
 import base64
-from fastapi import FastAPI, HTTPException, Depends, Request
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from twilio.rest import Client
 
 import sys
 import os
@@ -17,7 +16,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from services.core import process_image
 from services.models.fire_detector import detect_fire_and_smoke
-from services.notifier import send_alert
 
 class DetectionRequest(BaseModel):
     base64_image: str
@@ -56,14 +54,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-twilio_client = Client(
-    os.environ.get("TWILIO_ACCOUNT_SID"),
-    os.environ.get("TWILIO_AUTH_TOKEN")
-)
-TWILIO_MESSAGING_SERVICE_SID = os.environ.get("TWILIO_MESSAGING_SERVICE_SID")
-ALERT_PHONE_NUMBER = os.environ.get("ALERT_PHONE_NUMBER")  # destination number
-
-
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
@@ -83,38 +73,21 @@ def process(request: DetectionRequest):
         }
         frame_bytes = base64.b64decode(request.base64_image)
         detections = process_image(frame_bytes, context)
+        # in_danger = any(detection.get("emergency_level") == "high" for detection in detections if isinstance(detection, dict))
         return DetectionResponse(detections=detections)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing image: {str(e)}")
-
-@app.post("/notify")
-async def send_notification(request: Request):
-    """
-    Send a Twilio SMS notification when user clicks Notify on frontend.
-    """
-    body = await request.json()
-    message_text = body.get("message", "⚠️ Alert detected in your GuardianEye system.")
-
-    try:
-        twilio_client.messages.create(
-            messaging_service_sid=TWILIO_MESSAGING_SERVICE_SID,
-            to=ALERT_PHONE_NUMBER,
-            body=message_text
-        )
-        return {"success": True, "message": "Notification sent!"}
-    except Exception as e:
-        print("Twilio Error:", e)
-        return {"success": False, "error": str(e)}
 
 @app.get("/cameras", response_model=List[Camera])
 def get_cameras():
     """Get all cameras and their status"""
     cameras = [
-        {"id": "cam1", "location": "Living Room", "status": "active", "lastUpdate": "2025-01-27 14:30:15"},
+        {"id": "cam1", "location": "Simon Fraser Uni", "status": "active", "lastUpdate": "2025-01-27 14:30:15"},
         {"id": "cam2", "location": "Kitchen", "status": "active", "lastUpdate": "2025-01-27 14:25:42"},
         {"id": "cam3", "location": "Bathroom", "status": "active", "lastUpdate": "2025-01-27 14:20:33"},
         {"id": "cam4", "location": "Bedroom", "status": "active", "lastUpdate": "2025-01-27 14:18:21"},
         {"id": "cam5", "location": "Hallway", "status": "offline", "lastUpdate": "2025-01-27 13:45:12"},
+        {"id": "cam6", "location": "Garden", "status": "active", "lastUpdate": "2025-01-27 14:28:45"},
     ]
     return cameras
 
