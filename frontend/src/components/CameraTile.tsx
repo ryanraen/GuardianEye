@@ -1,12 +1,14 @@
 import React from 'react'
 import { Camera } from '../App'
+import PoseDetector from './PoseDetector'
 import './CameraTile.css'
 
 interface CameraTileProps {
   camera: Camera
+  onClick: () => void
 }
 
-const CameraTile: React.FC<CameraTileProps> = ({ camera }) => {
+const CameraTile: React.FC<CameraTileProps> = ({ camera, onClick }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return '#44ff44'
@@ -49,19 +51,28 @@ const CameraTile: React.FC<CameraTileProps> = ({ camera }) => {
       )
     }
 
+    // Show video with pose detection for Living Room camera (cam1), pattern for others
+    if (camera.id === 'cam1') {
+      return (
+        <div className="camera-feed active">
+          <PoseDetector
+            videoSrc="/placeholder-video.mp4"
+            style={{
+              width: '100%',
+              height: '100%'
+            }}
+          />
+          <div className="video-overlay">
+          </div>
+        </div>
+      )
+    }
+
     // Active camera - mock video feed
     return (
       <div className="camera-feed active">
         <div className="mock-video">
           <div className="video-overlay">
-            <div className="timestamp">{camera.lastUpdate}</div>
-            <div className="status-indicator">
-              <span 
-                className="status-dot"
-                style={{ backgroundColor: getStatusColor(camera.status) }}
-              ></span>
-              {getStatusText(camera.status)}
-            </div>
           </div>
         </div>
       </div>
@@ -69,9 +80,12 @@ const CameraTile: React.FC<CameraTileProps> = ({ camera }) => {
   }
 
   return (
-    <div className="camera-tile">
+    <div className="camera-tile" onClick={onClick}>
       <div className="camera-header">
-        <h3 className="camera-title">{camera.location}</h3>
+        <div>
+          <h3 className="camera-title">{camera.location}</h3>
+          <div className="camera-location">Senior Care Home: Room {camera.id.slice(-1)}</div>
+        </div>
         <div className="camera-status">
           <span 
             className="status-dot"

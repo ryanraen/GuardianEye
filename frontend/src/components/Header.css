@@ -2,7 +2,7 @@
   background-color: #2a2a2a;
   border-bottom: 1px solid #444;
   padding: 15px 30px;
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+  font-family: 'Aptos', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .header-content {
@@ -15,7 +15,8 @@
 .logo-section {
   flex: 1;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .logo {
@@ -24,6 +25,15 @@
   font-weight: bold;
   letter-spacing: 2px;
   margin: 0;
+}
+
+.slogan {
+  color: #888;
+  font-size: 12px;
+  font-weight: normal;
+  letter-spacing: 0.5px;
+  margin: 2px 0 0 0;
+  font-style: italic;
 }
 
 .datetime-section {
