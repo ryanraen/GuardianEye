@@ -55,7 +55,5 @@ class FallDetector:
                 now = time.time()
                 if now - self.last_fall_time > 5:  # prevent duplicate alerts
                     self.last_fall_time = now
-                return "FALLEN"
-        else:
-            print("UPRIGHT")
-        return None
+                return True
+        return False
