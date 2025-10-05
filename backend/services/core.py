@@ -1,3 +1,4 @@
+from backend.services.models.fall_detector import detect_fall
 from backend.services.models.fire_detector import detect_fire_and_smoke
 import models
 
@@ -27,6 +28,9 @@ def process_image(frame: base64, context: dict) -> list[str]:
     context: dict of e.g., {'room': 'kitchen', 'timestamp': ...}
     """
     results = []
+
+    fall_detection = detect_fall(frame)
+    results.append(fall_detection)
     fire_and_smoke_detection = detect_fire_and_smoke(frame)
     results.append(fire_and_smoke_detection)
     llm_analysis = get_llm_analysis(frame)
