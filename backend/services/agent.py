@@ -9,7 +9,7 @@ from PIL import Image
 import base64
 from google.genai import types
 
-def ambiguous_detector(frame: bytes) -> str:
+def ambiguous_detector(frame: bytes) -> dict:
     
     GEMINI_MODEL = 'gemini-2.5-flash'
     
@@ -42,7 +42,7 @@ def ambiguous_detector(frame: bytes) -> str:
                                 }
                             }
                         }
-                    ]
+                    ] 
                 }
             ]
             

@@ -1,13 +1,10 @@
-from backend.services.models.fall_detector import detect_fall
-from backend.services.models.fire_detector import detect_fire_and_smoke
-import models
-
-import base64
+from services.models.fall_detector import FallDetector
+from services.models.fire_detector import detect_fire_and_smoke
+from services.agent import ambiguous_detector
 from google import genai
-from google.genai import types
-import base64
 import os
 from dotenv import load_dotenv
+import json
 
 GEMINI_MODEL = 'gemini-2.5-flash'
 PROMPT = f"""
@@ -28,43 +25,51 @@ def process_image(frame: str, context: dict) -> list:
     context: dict of e.g., {'room': 'kitchen', 'timestamp': ...}
     """
     results = []
-    
-    # Convert base64 string to bytes for processing
-    frame_bytes = base64.b64decode(frame)
-    
-    fall_detection = detect_fall(frame_bytes)
-    if fall_detection:
-        fall_analysis = get_llm_analysis(frame, "fall")
-        results.append({
-            "incident": "fall",
-            "emergency level": "high",
-            "summary": fall_analysis
-        })
-    fire_and_smoke_detection = detect_fire_and_smoke(frame_bytes)
-    if len(fire_and_smoke_detection) > 0:
-        fire_analysis = get_llm_analysis(frame, "fire")
-        results.append({
-            "incident": "fire/smoke",
-            "emergency level": "high",
-            "summary": fire_analysis
-        })
-    if not(fall_detection) and len(fire_and_smoke_detection) == 0:
-        llm_analysis = get_llm_analysis(frame)
-        results.append(llm_analysis)
-        
-    return results
+    fall_detector = FallDetector()
 
-def get_llm_analysis(frame: str, incident_type: str = "general"):
+    # run specialized detectors
+    fire_detected = detect_fire_and_smoke(frame)
+    fall_detected = fall_detector.detect_fall(frame)
+
+    if fire_detected:
+        results.append({"incident": "Fire",
+                        "emergency_level": "high",
+                        "summary": f"An active fire with visible flames and smoke is occurring in {context["location"]}.",
+                        "suggestion": "Immediately evacuate all occupants, then call emergency services (911/fire department)."})
+        
+    if fall_detected:
+        results.append({"incident": "Person Fallen",
+                        "emergency_level": "high",
+                        "summary": f"A person has fallen in {context["location"]}.",
+                        "suggestion": "Immediately check on the person and call for emergency services if they are unresponsive or in distress."})
     
-    # ambiguous incident case
-    response = client.models.generate_content(
-    model=GEMINI_MODEL,
-    contents=[
-        types.Part.from_bytes(
-        data=base64.b64decode(frame),
-        mime_type='image/png',
-        ),
-        PROMPT,
-        ]
-    )
-    return response.text
+    # use LLM to detect ambiguous cases
+    response = ambiguous_detector(frame)
+    results.extend(response)
+    
+    return json.dumps(results)
+    
+    # # Convert base64 string to bytes for processing
+    # frame_bytes = base64.b64decode(frame)
+    
+    # fall_detection = detect_fall(frame_bytes)
+    # if fall_detection:
+    #     fall_analysis = get_llm_analysis(frame, "fall")
+    #     results.append({
+    #         "incident": "fall",
+    #         "emergency level": "high",
+    #         "summary": fall_analysis
+    #     })
+    # fire_and_smoke_detection = detect_fire_and_smoke(frame_bytes)
+    # if len(fire_and_smoke_detection) > 0:
+    #     fire_analysis = get_llm_analysis(frame, "fire")
+    #     results.append({
+    #         "incident": "fire/smoke",
+    #         "emergency level": "high",
+    #         "summary": fire_analysis
+    #     })
+    # if not(fall_detection) and len(fire_and_smoke_detection) == 0:
+    #     llm_analysis = get_llm_analysis(frame)
+    #     results.append(llm_analysis)
+        
+    # return results
