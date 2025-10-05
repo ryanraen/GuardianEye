@@ -8,6 +8,12 @@ import numpy as np
 import base64
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from services.core import process_image
 from services.models.fire_detector import detect_fire_and_smoke
 
@@ -63,10 +69,11 @@ def process(request: DetectionRequest):
     try:
         # Create context for the process_image function
         context = {
-            "room": request.location,
-            "timestamp": request.time
+            "location": request.location,
+            "time": request.time
         }
-        detections = process_image(request.base64_image, context)
+        frame_bytes = base64.b64decode(request.base64_image)
+        detections = process_image(frame_bytes, context)
         in_danger = any(detection.get("emergency level") == "high" for detection in detections if isinstance(detection, dict))
         return DetectionResponse(detections=detections, danger=in_danger)
     except Exception as e:
@@ -113,5 +120,6 @@ def get_events():
 def health_check():
     """Health check endpoint"""
     return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+    
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000);
+    uvicorn.run(app, host="0.0.0.0", port=8000)
