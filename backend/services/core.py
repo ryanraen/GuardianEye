@@ -1,6 +1,7 @@
 from services.models.fall_detector import FallDetector
 from services.models.fire_detector import detect_fire_and_smoke
 from services.agent import ambiguous_detector
+from util.helpers import fall_detector
 from google import genai
 import os
 from dotenv import load_dotenv
@@ -18,25 +19,17 @@ load_dotenv()
 
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
-def process_image(frame: str, context: dict) -> list:
+def process_image(frame: str, context: dict) -> str:
     """
     Main app orchestration pipeline
     frame: base64 image of a captured frame from camera feed
     context: dict of e.g., {'room': 'kitchen', 'timestamp': ...}
     """
     results = []
-    fall_detector = FallDetector()
 
     # run specialized detectors
-    fire_detected = detect_fire_and_smoke(frame)
     fall_detected = fall_detector.detect_fall(frame)
-
-    if fire_detected:
-        results.append({"incident": "Fire",
-                        "emergency_level": "high",
-                        "summary": f"An active fire with visible flames and smoke is occurring in {context["location"]}.",
-                        "suggestion": "Immediately evacuate all occupants, then call emergency services (911/fire department)."})
-        
+ 
     if fall_detected:
         results.append({"incident": "Person Fallen",
                         "emergency_level": "high",
@@ -44,7 +37,8 @@ def process_image(frame: str, context: dict) -> list:
                         "suggestion": "Immediately check on the person and call for emergency services if they are unresponsive or in distress."})
     
     # use LLM to detect ambiguous cases
-    response = ambiguous_detector(frame)
-    results.extend(response)
+    if not fall_detected:
+        response = ambiguous_detector(frame)
+        results.extend(response)
     
     return json.dumps(results)

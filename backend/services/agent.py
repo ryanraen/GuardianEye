@@ -53,9 +53,9 @@ def ambiguous_detector(frame: bytes) -> dict:
                 You received the following vision data with context.
                 Based on what you see, describe if this looks like a risk or normal behavior and indicate the level of emergency as either high, medium, or low.
                 Respond concisely and suggest one next step.
-                Return only output a list of JSON like:
+                Return only output a list of dict:
                 [
-                    {"incident": "water spill",
+                    {"incident": "Water spill",
                      "emergency_level": "low",
                      "summary": "Water was spilled in bathroom - potential slipping hazard.",
                      "suggestion": "Clean up the spill immediately to avoid injuries."},
@@ -63,6 +63,8 @@ def ambiguous_detector(frame: bytes) -> dict:
                      ...},
                      ...
                 ]
+                
+                Note: if there is no incident and behavior is normal, incident should be "None", emergency_level should be "None", summary should be "Everything is normal.", and suggestions should be "No actions needed."
                 """,
                 messages=initial_messages
                 )
