@@ -5,7 +5,37 @@
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+  font-family: 'Aptos', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Custom scrollbar styling */
+.sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: #1a1a1a;
+  border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.sidebar::-webkit-scrollbar-thumb:active {
+  background: #666;
+}
+
+/* Firefox scrollbar styling */
+.sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: #444 #1a1a1a;
 }
 
 .sidebar-section {
@@ -13,9 +43,12 @@
   border-bottom: 1px solid #444;
 }
 
-.sidebar-section:last-child {
+.sidebar-section:first-child {
   flex: 1;
-  border-bottom: none;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .section-title {
@@ -30,6 +63,38 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Custom scrollbar for events list */
+.events-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.events-list::-webkit-scrollbar-track {
+  background: #1a1a1a;
+  border-radius: 3px;
+}
+
+.events-list::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+
+.events-list::-webkit-scrollbar-thumb:hover {
+  background: #444;
+}
+
+.events-list::-webkit-scrollbar-thumb:active {
+  background: #555;
+}
+
+/* Firefox scrollbar styling */
+.events-list {
+  scrollbar-width: thin;
+  scrollbar-color: #333 #1a1a1a;
 }
 
 .event-item {
@@ -56,15 +121,12 @@
 
 .event-header {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: 5px;
   min-width: 30px;
+  height: 100%;
 }
 
-.event-icon {
-  font-size: 18px;
-}
 
 .severity-indicator {
   width: 8px;
@@ -96,75 +158,18 @@
   font-size: 10px;
 }
 
-.summary-content {
-  background-color: #333;
-  border: 1px solid #555;
-  border-radius: 4px;
-  padding: 15px;
-  min-height: 200px;
-}
 
-.event-summary {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.summary-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #555;
-}
-
-.summary-icon {
-  font-size: 20px;
-}
-
-.summary-type {
-  color: #e0e0e0;
-  font-size: 14px;
-  font-weight: bold;
-  letter-spacing: 1px;
-}
-
-.summary-details {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.summary-details p {
-  color: #e0e0e0;
-  font-size: 12px;
-  line-height: 1.4;
-  margin: 0;
-}
-
-.summary-details strong {
-  color: #bbb;
-}
-
-.severity-text {
-  font-weight: bold;
-  text-transform: uppercase;
-}
-
-.description {
+.cameras-status-section {
+  padding: 6px 20px;
+  border-top: 1px solid #444;
   background-color: #2a2a2a;
-  padding: 10px;
-  border-radius: 4px;
-  border-left: 3px solid #4a7c9e;
-  margin-top: 5px;
+  text-align: center;
+  flex-shrink: 0;
 }
 
-.no-selection {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 200px;
-  color: #888;
+.cameras-status-text {
+  color: #e0e0e0;
   font-size: 12px;
-  text-align: center;
+  font-weight: 900;
+  letter-spacing: 0.5px;
 }
