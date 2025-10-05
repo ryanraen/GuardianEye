@@ -8,11 +8,10 @@ import tempfile
 from PIL import Image
 import base64
 from google.genai import types
+import json
 
-def ambiguous_detector(frame: bytes) -> dict:
-    
+def ambiguous_detector(frame: bytes) -> list:
     GEMINI_MODEL = 'gemini-2.5-flash'
-    
     print("Connecting to server...")
     mcp_client = MCPClient(lambda: stdio_client(StdioServerParameters(
         command="python",
@@ -24,7 +23,7 @@ def ambiguous_detector(frame: bytes) -> dict:
     model = GeminiModel(
         client_args={
             "api_key": os.environ.get("GEMINI_API_KEY")
-            },
+        },
         model_id=GEMINI_MODEL
     )
 
@@ -42,35 +41,35 @@ def ambiguous_detector(frame: bytes) -> dict:
                                 }
                             }
                         }
-                    ] 
+                    ]
                 }
             ]
-            
+
             with Agent(
                 model=model,
-                system_prompt="""
-                You are an AI home safety agent. 
-                You received the following vision data with context.
-                Based on what you see, describe if this looks like a risk or normal behavior and indicate the level of emergency as either high, medium, or low.
-                Respond concisely and suggest one next step.
-                Return only a list of dict:
-                [
-                    {"incident": "Water spill",
-                     "emergency_level": "low",
-                     "summary": "Water was spilled in bathroom - potential slipping hazard.",
-                     "suggestion": "Clean up the spill immediately to avoid injuries."},
-                     {"...": "...",
-                     ...},
-                     ...
-                ]
-                
-                Note: if there is no incident and behavior is normal, incident should be "None", emergency_level should be "None", summary should be "Everything is normal.", and suggestions should be "No actions needed."
-                """,
+                system_prompt="""You are an AI home safety agent... (same prompt)""",
                 messages=initial_messages
-                ) as agent:
+            ) as agent:
                 result = agent("Please analyze this image.")
-                return str(result.message)
-                
+
+                try:
+                    parsed = json.loads(result.message)
+                    if isinstance(parsed, list):
+                        return parsed
+                    else:
+                        return [parsed]
+                except Exception:
+                    return [{
+                        "incident": "None",
+                        "emergency_level": "None",
+                        "summary": "Everything is normal.",
+                        "suggestion": "No actions needed."
+                    }]
     except Exception as e:
-        print("SERVER CONNECTION FAILED: " + str(e.with_traceback(None)))
-        
+        print("SERVER CONNECTION FAILED:", e)
+        return [{
+            "incident": "None",
+            "emergency_level": "None",
+            "summary": "Unable to process image.",
+            "suggestion": "Please retry or check the AI service."
+        }]

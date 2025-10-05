@@ -35,10 +35,10 @@ def process_image(frame: str, context: dict) -> str:
                         "emergency_level": "high",
                         "summary": f"A person has fallen in {context["location"]}.",
                         "suggestion": "Immediately check on the person and call for emergency services if they are unresponsive or in distress."})
-    
     # use LLM to detect ambiguous cases
-    if not fall_detected:
+    else:
         response = ambiguous_detector(frame)
-        results.extend(response)
-    
-    return json.dumps(results)
+        if isinstance(response, list):
+            results.extend(response)
+
+    return results
