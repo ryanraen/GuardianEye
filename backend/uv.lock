@@ -82,6 +82,18 @@ wheels = [
 ]
 
 [[package]]
+name = "aiohttp-retry"
+version = "2.9.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "aiohttp" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/9d/61/ebda4d8e3d8cfa1fd3db0fb428db2dd7461d5742cea35178277ad180b033/aiohttp_retry-2.9.1.tar.gz", hash = "sha256:8eb75e904ed4ee5c2ec242fefe85bf04240f685391c4879d8f541d6028ff01f1", size = 13608, upload-time = "2024-11-06T10:44:54.574Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1a/99/84ba7273339d0f3dfa57901b846489d2e5c2cd731470167757f1935fffbd/aiohttp_retry-2.9.1-py3-none-any.whl", hash = "sha256:66d2759d1921838256a05a3f80ad7e724936f083e35be5abb5e16eed6be6dc54", size = 9981, upload-time = "2024-11-06T10:44:52.917Z" },
+]
+
+[[package]]
 name = "aiosignal"
 version = "1.4.0"
 source = { registry = "https://pypi.org/simple" }
@@ -607,6 +619,7 @@ dependencies = [
     { name = "mediapipe" },
     { name = "strands-agents" },
     { name = "strands-agents-tools" },
+    { name = "twilio" },
     { name = "ultralytics" },
 ]
 
@@ -618,6 +631,7 @@ requires-dist = [
     { name = "mediapipe", specifier = ">=0.10.21" },
     { name = "strands-agents", specifier = ">=1.10.0" },
     { name = "strands-agents-tools", specifier = ">=0.2.9" },
+    { name = "twilio", specifier = ">=9.8.3" },
     { name = "ultralytics", specifier = ">=8.3.204" },
 ]
 
@@ -2455,6 +2469,21 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/d0/66/b1eb52839f563623d185f0927eb3530ee4d5ffe9d377cdaf5346b306689e/triton-3.4.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:31c1d84a5c0ec2c0f8e8a072d7fd150cab84a9c239eaddc6706c081bfae4eb04", size = 155560068, upload-time = "2025-07-30T19:58:37.081Z" },
     { url = "https://files.pythonhosted.org/packages/30/7b/0a685684ed5322d2af0bddefed7906674f67974aa88b0fae6e82e3b766f6/triton-3.4.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:00be2964616f4c619193cb0d1b29a99bd4b001d7dc333816073f92cf2a8ccdeb", size = 155569223, upload-time = "2025-07-30T19:58:44.017Z" },
     { url = "https://files.pythonhosted.org/packages/20/63/8cb444ad5cdb25d999b7d647abac25af0ee37d292afc009940c05b82dda0/triton-3.4.0-cp313-cp313t-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:7936b18a3499ed62059414d7df563e6c163c5e16c3773678a3ee3d417865035d", size = 155659780, upload-time = "2025-07-30T19:58:51.171Z" },
+]
+
+[[package]]
+name = "twilio"
+version = "9.8.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "aiohttp" },
+    { name = "aiohttp-retry" },
+    { name = "pyjwt" },
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e7/8f/e29e36f5cc3ead2a71d1399f0cc1b1327db4bc96b8cdf3cfae0a721bebfc/twilio-9.8.3.tar.gz", hash = "sha256:4409af2681f53c6d4a052232615b6e63b2b3f7fbd83b14bed54d90891cb12d0d", size = 940073, upload-time = "2025-09-30T12:16:26.306Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/09/41/273e92fb30e4ff01079a8301323b83a9dd2355ed483b4d89add1b07cffdc/twilio-9.8.3-py2.py3-none-any.whl", hash = "sha256:9182797ce26e0ed0ab95e7631aa3a91587f35da6402f6a2b33d87b8badc8d588", size = 1831650, upload-time = "2025-09-30T12:16:24.156Z" },
 ]
 
 [[package]]
