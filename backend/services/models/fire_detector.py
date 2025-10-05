@@ -1,8 +1,13 @@
+import os
 from ultralytics import YOLO
 import numpy as np
 import cv2
 
-model = YOLO("trained/best.pt") 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+model_path = os.path.join(BASE_DIR, "trained", "best.pt")
+
+model = YOLO(model_path)
 
 def detect_fire_and_smoke(frame, conf_thresh=0.4):
     """
