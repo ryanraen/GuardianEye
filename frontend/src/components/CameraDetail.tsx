@@ -29,28 +29,10 @@ const CameraDetail: React.FC<CameraDetailProps> = ({ camera, onBack, onAIDetecti
     }])
   }
 
-  // Mock AI summary data (will be replaced with real AI analysis)
-  const aiSummary = {
-    currentActivity: 'Person walking from kitchen to living room',
-    riskLevel: 'Low',
-    peopleCount: 1,
-    objectsDetected: ['chair', 'table', 'lamp'],
-    lastUpdate: new Date().toLocaleTimeString()
-  }
-
-  const getRiskColor = (risk: string) => {
-    switch (risk.toLowerCase()) {
-      case 'low': return '#44ff44'
-      case 'medium': return '#ffaa00'
-      case 'high': return '#ff8800'
-      case 'critical': return '#ff4444'
-      default: return '#888'
-    }
-  }
 
   // Render the video feed based on camera ID
   const renderVideoFeed = () => {
-    // Show webcam with pose detection for Living Room camera (cam1 - top-left)
+    // Show webcam with pose detection for Simon Fraser Uni camera (cam1 - top-left)
     if (camera.id === 'cam1') {
       return (
         <PoseDetector
@@ -130,36 +112,40 @@ const CameraDetail: React.FC<CameraDetailProps> = ({ camera, onBack, onAIDetecti
           </div>
         </div>
 
-        <div className="ai-summary-section">
-          <h2 className="section-title">AI ANALYSIS</h2>
-          <div className="ai-summary-content">
-            <div className="summary-item">
-              <span className="summary-label">Current Activity:</span>
-              <span className="summary-value">{aiSummary.currentActivity}</span>
+        <div className="detection-feed-section">
+          <h2 className="section-title">REAL-TIME DETECTION FEED</h2>
+          <div className="detection-feed-content">
+            <div className="detection-item">
+              <span className="detection-time">2:34 PM</span>
+              <span className="detection-type person">Person detected</span>
+              <span className="detection-confidence">95% confidence</span>
             </div>
-            <div className="summary-item">
-              <span className="summary-label">Risk Level:</span>
-              <span 
-                className="summary-value risk-level"
-                style={{ color: getRiskColor(aiSummary.riskLevel) }}
-              >
-                {aiSummary.riskLevel.toUpperCase()}
-              </span>
+            <div className="detection-item">
+              <span className="detection-time">2:31 PM</span>
+              <span className="detection-type normal">Normal activity</span>
+              <span className="detection-confidence">-</span>
             </div>
-            <div className="summary-item">
-              <span className="summary-label">People Detected:</span>
-              <span className="summary-value">{aiSummary.peopleCount}</span>
+            <div className="detection-item">
+              <span className="detection-time">2:28 PM</span>
+              <span className="detection-type motion">Motion detected</span>
+              <span className="detection-confidence">78% confidence</span>
             </div>
-            <div className="summary-item">
-              <span className="summary-label">Objects:</span>
-              <span className="summary-value">{aiSummary.objectsDetected.join(', ')}</span>
+            <div className="detection-item">
+              <span className="detection-time">2:25 PM</span>
+              <span className="detection-type normal">No activity detected</span>
+              <span className="detection-confidence">-</span>
             </div>
-            <div className="summary-item">
-              <span className="summary-label">Last Update:</span>
-              <span className="summary-value">{aiSummary.lastUpdate}</span>
+            <div className="detection-item">
+              <span className="detection-time">2:22 PM</span>
+              <span className="detection-type person">Person detected</span>
+              <span className="detection-confidence">92% confidence</span>
             </div>
           </div>
         </div>
+      </div>
+
+      {/* AI Detection Alerts - moved outside camera-detail-content */}
+      <div style={{ padding: '0 20px 20px 20px' }}>
 
         {/* AI Detection Alerts */}
         {aiAlerts.length > 0 && (

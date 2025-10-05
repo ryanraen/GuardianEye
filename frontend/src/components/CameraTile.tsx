@@ -51,7 +51,7 @@ const CameraTile: React.FC<CameraTileProps> = ({ camera, onClick }) => {
       )
     }
 
-    // Show webcam with pose detection for Living Room camera (cam1 - top-left)
+    // Show webcam with pose detection for Simon Fraser Uni camera (cam1 - top-left)
     if (camera.id === 'cam1') {
       return (
         <div className="camera-feed active">
@@ -89,7 +89,9 @@ const CameraTile: React.FC<CameraTileProps> = ({ camera, onClick }) => {
       <div className="camera-header">
         <div>
           <h3 className="camera-title">{camera.location}</h3>
-          <div className="camera-location">Senior Care Home: Room {camera.id.slice(-1)}</div>
+          <div className="camera-location">
+            {camera.id === 'cam1' ? 'Judging Room' : `Senior Care Home: Room ${camera.id.slice(-1)}`}
+          </div>
         </div>
         <div className="camera-status">
           <span 

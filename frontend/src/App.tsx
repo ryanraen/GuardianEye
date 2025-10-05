@@ -42,11 +42,12 @@ const App: React.FC = () => {
         
         // Fallback to mock data if API fails
         setCameras([
-          { id: 'cam1', location: 'Living Room', status: 'active', lastUpdate: '2025-01-27 14:30:15' },
+          { id: 'cam1', location: 'Simon Fraser Uni', status: 'active', lastUpdate: '2025-01-27 14:30:15' },
           { id: 'cam2', location: 'Kitchen', status: 'active', lastUpdate: '2025-01-27 14:25:42' },
           { id: 'cam3', location: 'Bedroom', status: 'active', lastUpdate: '2025-01-27 14:20:33' },
           { id: 'cam4', location: 'Bathroom', status: 'active', lastUpdate: '2025-01-27 14:18:21' },
           { id: 'cam5', location: 'Hallway', status: 'offline', lastUpdate: '2025-01-27 13:45:12' },
+          { id: 'cam6', location: 'Garden', status: 'active', lastUpdate: '2025-01-27 14:28:45' },
         ]);
         
         setEvents([
@@ -55,7 +56,7 @@ const App: React.FC = () => {
             type: 'fall',
             severity: 'critical',
             timestamp: '2025-01-27 14:30:15',
-            location: 'Living Room',
+            location: 'Simon Fraser Uni',
             description: 'Elderly resident fall detected - immediate medical attention required',
             cameraId: 'cam1'
           },
