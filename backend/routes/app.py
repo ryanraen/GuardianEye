@@ -24,7 +24,6 @@ def process(base64_image: str):
     detections = process_image(base64_image)
     in_danger = True
     return {"detections": detections, "danger": in_danger}
-
-    return {"detections": detections}
+    
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000);
