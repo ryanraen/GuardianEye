@@ -5,6 +5,86 @@
   background-color: #1a1a1a;
 }
 
+/* Loading and Error States */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+  text-align: center;
+  color: white;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid #ffffff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+  padding: 20px;
+}
+
+.error-message {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+  max-width: 500px;
+  backdrop-filter: blur(10px);
+  color: white;
+}
+
+.error-message h2 {
+  margin-bottom: 15px;
+  color: #ff6b6b;
+}
+
+.error-message p {
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+
+.error-note {
+  font-style: italic;
+  opacity: 0.8;
+  font-size: 0.9em;
+}
+
+.retry-button {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin-top: 15px;
+}
+
+.retry-button:hover {
+  background: linear-gradient(135deg, #ee5a24, #ff6b6b);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+}
+
 .main-content {
   display: flex;
   flex: 1;

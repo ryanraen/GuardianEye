@@ -10,8 +10,19 @@ interface CameraDetailProps {
 
 const CameraDetail: React.FC<CameraDetailProps> = ({ camera, onBack }) => {
   const [showMesh, setShowMesh] = useState(true)
+  const [aiAlerts, setAiAlerts] = useState<any[]>([])
   
-  // Mock AI summary data
+  // Handle AI detection results
+  const handleAIDetection = (result: any) => {
+    console.log('AI Detection received:', result)
+    setAiAlerts(prev => [...prev, {
+      ...result,
+      timestamp: new Date().toLocaleTimeString(),
+      id: Date.now()
+    }])
+  }
+
+  // Mock AI summary data (will be replaced with real AI analysis)
   const aiSummary = {
     currentActivity: 'Person walking from kitchen to living room',
     riskLevel: 'Low',
@@ -38,6 +49,8 @@ const CameraDetail: React.FC<CameraDetailProps> = ({ camera, onBack }) => {
         <PoseDetector
           videoSrc="/placeholder-video.mp4"
           showMesh={showMesh}
+          location={camera.location}
+          onDetection={handleAIDetection}
           style={{
             width: '100%',
             height: '100%',
@@ -134,6 +147,32 @@ const CameraDetail: React.FC<CameraDetailProps> = ({ camera, onBack }) => {
             </div>
           </div>
         </div>
+
+        {/* AI Detection Alerts */}
+        {aiAlerts.length > 0 && (
+          <div className="ai-alerts-section">
+            <h2 className="section-title">🚨 AI DETECTION ALERTS</h2>
+            <div className="alerts-list">
+              {aiAlerts.slice(-3).map((alert) => (
+                <div key={alert.id} className="alert-item">
+                  <div className="alert-header">
+                    <span className="alert-time">{alert.timestamp}</span>
+                    <span className={`alert-severity ${alert.danger ? 'danger' : 'warning'}`}>
+                      {alert.danger ? 'HIGH RISK' : 'CAUTION'}
+                    </span>
+                  </div>
+                  {alert.detections?.map((detection: any, idx: number) => (
+                    <div key={idx} className="detection-item">
+                      <p><strong>{detection.incident}</strong></p>
+                      <p>{detection.summary}</p>
+                      <p className="suggestion">{detection.suggestion}</p>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

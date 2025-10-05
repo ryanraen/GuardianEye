@@ -366,3 +366,75 @@
     padding: 10px;
   }
 }
+
+/* AI Alerts Section */
+.ai-alerts-section {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.alerts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.alert-item {
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 8px;
+  padding: 15px;
+  transition: all 0.3s ease;
+}
+
+.alert-item:hover {
+  background: rgba(255, 107, 107, 0.15);
+  border-color: rgba(255, 107, 107, 0.5);
+}
+
+.alert-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.alert-time {
+  font-size: 0.9em;
+  opacity: 0.8;
+}
+
+.alert-severity {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  font-weight: bold;
+}
+
+.alert-severity.danger {
+  background: #ff4444;
+  color: white;
+}
+
+.alert-severity.warning {
+  background: #ffaa00;
+  color: white;
+}
+
+.detection-item {
+  margin-bottom: 10px;
+}
+
+.detection-item p {
+  margin: 5px 0;
+  line-height: 1.4;
+}
+
+.detection-item .suggestion {
+  font-style: italic;
+  opacity: 0.9;
+  font-size: 0.9em;
+}

@@ -1,82 +1,81 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import CameraGrid from './components/CameraGrid';
 import CameraDetail from './components/CameraDetail';
 import EventDetail from './components/EventDetail';
+import { api, Event, Camera } from './services/api';
 
-export interface Event {
-  id: string;
-  type: 'hazard' | 'fall' | 'medical' | 'security';
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  timestamp: string;
-  location: string;
-  description: string;
-  cameraId: string;
-}
-
-export interface Camera {
-  id: string;
-  location: string;
-  status: 'active' | 'offline' | 'error';
-  lastUpdate: string;
-}
+// Re-export types for components
+export type { Event, Camera };
 
 const App: React.FC = () => {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [selectedCamera, setSelectedCamera] = useState<Camera | null>(null);
   const [viewingEventDetail, setViewingEventDetail] = useState<Event | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock data - will be replaced with API calls
-  const [events, setEvents] = useState<Event[]>([
-    {
-      id: '1',
-      type: 'hazard',
-      severity: 'high',
-      timestamp: '2025-01-27 14:30:15',
-      location: 'Living Room',
-      description: 'Slippery surface detected - potential fall risk',
-      cameraId: 'cam1'
-    },
-    {
-      id: '2',
-      type: 'fall',
-      severity: 'critical',
-      timestamp: '2025-01-27 14:25:42',
-      location: 'Kitchen',
-      description: 'Fall detected - immediate attention required',
-      cameraId: 'cam2'
-    },
-    {
-      id: '3',
-      type: 'medical',
-      severity: 'medium',
-      timestamp: '2025-01-27 14:20:33',
-      location: 'Bedroom',
-      description: 'Unusual movement pattern detected',
-      cameraId: 'cam3'
-    }
-  ]);
+  // State for API data
+  const [events, setEvents] = useState<Event[]>([]);
+  const [cameras, setCameras] = useState<Camera[]>([]);
 
-  const [cameras] = useState<Camera[]>([
-    { id: 'cam1', location: 'Living Room', status: 'active', lastUpdate: '2025-01-27 14:30:15' },
-    { id: 'cam2', location: 'Kitchen', status: 'active', lastUpdate: '2025-01-27 14:25:42' },
-    { id: 'cam3', location: 'Bedroom', status: 'active', lastUpdate: '2025-01-27 14:20:33' },
-    { id: 'cam4', location: 'Bathroom', status: 'active', lastUpdate: '2025-01-27 14:18:21' },
-    { id: 'cam5', location: 'Hallway', status: 'offline', lastUpdate: '2025-01-27 13:45:12' },
-    { id: 'cam6', location: 'Garden', status: 'active', lastUpdate: '2025-01-27 14:29:08' },
-    { id: 'cam7', location: 'Dining Room', status: 'active', lastUpdate: '2025-01-27 14:28:45' },
-    { id: 'cam8', location: 'Study Room', status: 'active', lastUpdate: '2025-01-27 14:27:32' },
-    { id: 'cam9', location: 'Laundry Room', status: 'active', lastUpdate: '2025-01-27 14:26:18' },
-    { id: 'cam10', location: 'Garage', status: 'offline', lastUpdate: '2025-01-27 14:25:55' },
-    { id: 'cam11', location: 'Front Door', status: 'active', lastUpdate: '2025-01-27 14:24:12' },
-    { id: 'cam12', location: 'Back Door', status: 'error', lastUpdate: '2025-01-27 14:23:48' },
-    { id: 'cam13', location: 'Basement', status: 'active', lastUpdate: '2025-01-27 14:22:35' },
-    { id: 'cam14', location: 'Attic', status: 'active', lastUpdate: '2025-01-27 14:21:22' },
-    { id: 'cam15', location: 'Storage Room', status: 'offline', lastUpdate: '2025-01-27 14:20:09' },
-    { id: 'cam16', location: 'Utility Room', status: 'active', lastUpdate: '2025-01-27 14:19:56' }
-  ]);
+  // Load data from API on component mount
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Load cameras and events in parallel
+        const [camerasData, eventsData] = await Promise.all([
+          api.getCameras(),
+          api.getEvents()
+        ]);
+        
+        setCameras(camerasData);
+        setEvents(eventsData);
+      } catch (err) {
+        console.error('Failed to load data:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load data');
+        
+        // Fallback to mock data if API fails
+        setCameras([
+          { id: 'cam1', location: 'Living Room', status: 'active', lastUpdate: '2025-01-27 14:30:15' },
+          { id: 'cam2', location: 'Kitchen', status: 'active', lastUpdate: '2025-01-27 14:25:42' },
+          { id: 'cam3', location: 'Bedroom', status: 'active', lastUpdate: '2025-01-27 14:20:33' },
+          { id: 'cam4', location: 'Bathroom', status: 'active', lastUpdate: '2025-01-27 14:18:21' },
+          { id: 'cam5', location: 'Hallway', status: 'offline', lastUpdate: '2025-01-27 13:45:12' },
+        ]);
+        
+        setEvents([
+          {
+            id: '1',
+            type: 'fall',
+            severity: 'critical',
+            timestamp: '2025-01-27 14:30:15',
+            location: 'Living Room',
+            description: 'Elderly resident fall detected - immediate medical attention required',
+            cameraId: 'cam1'
+          },
+          {
+            id: '2',
+            type: 'medical',
+            severity: 'high',
+            timestamp: '2025-01-27 14:25:42',
+            location: 'Kitchen',
+            description: 'Unusual movement pattern - potential medical emergency',
+            cameraId: 'cam2'
+          }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
 
   const handleCameraSelect = (camera: Camera) => {
     setSelectedCamera(camera);
@@ -98,6 +97,38 @@ const App: React.FC = () => {
     setEvents(prevEvents => prevEvents.filter(event => event.id !== eventId));
     setViewingEventDetail(null);
   };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="app">
+        <Header />
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading GuardianEye...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="app">
+        <Header />
+        <div className="error-container">
+          <div className="error-message">
+            <h2>⚠️ Connection Error</h2>
+            <p>{error}</p>
+            <p className="error-note">Running in offline mode with sample data.</p>
+            <button onClick={() => window.location.reload()} className="retry-button">
+              Retry Connection
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (viewingEventDetail) {
     return (

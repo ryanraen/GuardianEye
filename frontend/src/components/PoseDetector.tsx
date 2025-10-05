@@ -1,10 +1,13 @@
 import React, { useRef, useEffect, useState } from 'react'
+import { api, DetectionResponse } from '../services/api'
 
 interface PoseDetectorProps {
   videoSrc: string
   className?: string
   style?: React.CSSProperties
   showMesh?: boolean
+  location?: string
+  onDetection?: (result: DetectionResponse) => void
 }
 
 interface PoseLandmark {
@@ -14,11 +17,20 @@ interface PoseLandmark {
   visibility?: number
 }
 
-const PoseDetector: React.FC<PoseDetectorProps> = ({ videoSrc, className, style, showMesh = true }) => {
+const PoseDetector: React.FC<PoseDetectorProps> = ({ 
+  videoSrc, 
+  className, 
+  style, 
+  showMesh = true, 
+  location = 'Unknown Location',
+  onDetection 
+}) => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isLoaded, setIsLoaded] = useState(false)
   const [poseDetector, setPoseDetector] = useState<any>(null)
+  const [lastDetectionTime, setLastDetectionTime] = useState<number>(0)
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
 
   // Initialize MediaPipe Pose Detection
   useEffect(() => {
@@ -59,6 +71,29 @@ const PoseDetector: React.FC<PoseDetectorProps> = ({ videoSrc, className, style,
   const processFrame = useRef<(timestamp: number) => void>()
   const animationId = useRef<number>()
   
+  // AI Detection function
+  const performAIDetection = async (video: HTMLVideoElement) => {
+    const now = Date.now()
+    // Only analyze every 5 seconds to avoid overwhelming the API
+    if (now - lastDetectionTime < 5000 || isAnalyzing) return
+    
+    try {
+      setIsAnalyzing(true)
+      setLastDetectionTime(now)
+      
+      const result = await api.captureVideoFrame(video, location)
+      
+      if (result.danger && result.detections.length > 0) {
+        console.log('🚨 AI Detection Alert:', result.detections)
+        onDetection?.(result)
+      }
+    } catch (error) {
+      console.error('AI Detection failed:', error)
+    } finally {
+      setIsAnalyzing(false)
+    }
+  }
+  
   useEffect(() => {
     if (!isLoaded || !poseDetector || !videoRef.current || !canvasRef.current) return
 
@@ -96,6 +131,9 @@ const PoseDetector: React.FC<PoseDetectorProps> = ({ videoSrc, className, style,
               drawPoseLandmarks(ctx, results.landmarks[0], canvas.width, canvas.height)
             }
           }
+          
+          // Perform AI detection for safety analysis
+          performAIDetection(video)
         } catch (error) {
           console.error('Error processing frame:', error)
         }
