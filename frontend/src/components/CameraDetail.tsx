@@ -54,10 +54,21 @@ const CameraDetail: React.FC<CameraDetailProps> = ({ camera, onBack, onAIDetecti
       )
     }
 
-    // Show the placeholder video with pose detection for all other cameras
+    // Show specific videos with pose detection for different cameras
+    const getVideoSrc = () => {
+      switch (camera.id) {
+        case 'cam2': return '/Room1.mp4'
+        case 'cam3': return '/Room2.mp4' 
+        case 'cam4': return '/Room3.mp4'
+        case 'cam5': return '/Room4.mp4'
+        case 'cam6': return '/Garden.mp4'
+        default: return '/placeholder-video.mp4'
+      }
+    }
+
     return (
       <PoseDetector
-        videoSrc="/placeholder-video.mp4"
+        videoSrc={getVideoSrc()}
         showMesh={showMesh}
         location={camera.location}
         onDetection={handleAIDetection}

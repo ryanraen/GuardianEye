@@ -248,7 +248,6 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, onDismiss }) =
                 ) : (
                   <div className="video-placeholder">
                     <div className="video-content">
-                      <div className="video-icon">🎥</div>
                       <p>Playing cached clip...</p>
                       <p className="event-location">{event.location}</p>
                       <p className="video-note">5-second clip from {event.timestamp}</p>
@@ -260,7 +259,6 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, onDismiss }) =
               <div className="video-thumbnail" onClick={handlePlayVideo}>
                 <div className="thumbnail-content">
                   <div className="play-button">▶️</div>
-                  <div className="video-icon">🎥</div>
                   <p>{event.videoClipUrl ? 'Click to view detection moment' : 'No image available'}</p>
                   <p className="event-location">{event.location}</p>
                   <p className="video-note">Moment captured at {event.timestamp}</p>

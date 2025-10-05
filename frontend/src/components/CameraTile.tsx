@@ -68,11 +68,22 @@ const CameraTile: React.FC<CameraTileProps> = ({ camera, onClick }) => {
       )
     }
 
-    // Show video with pose detection for all other cameras
+    // Show specific videos with pose detection for different cameras
+    const getVideoSrc = () => {
+      switch (camera.id) {
+        case 'cam2': return '/Room1.mp4'
+        case 'cam3': return '/Room2.mp4' 
+        case 'cam4': return '/Room3.mp4'
+        case 'cam5': return '/Room4.mp4'
+        case 'cam6': return '/Garden.mp4'
+        default: return '/placeholder-video.mp4'
+      }
+    }
+
     return (
       <div className="camera-feed active">
         <PoseDetector
-          videoSrc="/placeholder-video.mp4"
+          videoSrc={getVideoSrc()}
           style={{
             width: '100%',
             height: '100%'
