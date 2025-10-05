@@ -6,6 +6,7 @@ import time
 mp_pose = mp.solutions.pose
 FALLEN_THRESHOLD = 40
 
+
 class FallDetector:
     def __init__(self):
         self.pose = mp_pose.Pose()
@@ -55,7 +56,5 @@ class FallDetector:
                 now = time.time()
                 if now - self.last_fall_time > 5:  # prevent duplicate alerts
                     self.last_fall_time = now
-                return "FALLEN"
-        else:
-            print("UPRIGHT")
-        return None
+                return True
+        return False
