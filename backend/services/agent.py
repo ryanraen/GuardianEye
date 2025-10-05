@@ -6,15 +6,17 @@ from mcp.client.stdio import stdio_client, StdioServerParameters
 from dotenv import load_dotenv
 import tempfile
 from PIL import Image
+import base64
+from google.genai import types
 
-def ambiguous_detector(frame: bytes) -> list:
+def ambiguous_detector(frame: bytes) -> str:
     
     GEMINI_MODEL = 'gemini-2.5-flash'
     
     print("Connecting to server...")
     mcp_client = MCPClient(lambda: stdio_client(StdioServerParameters(
         command="python",
-        args=["mcpserver.py"]
+        args=["services/mcpserver.py"]
     )))
 
     print("Setting up Gemini model...")
@@ -28,6 +30,22 @@ def ambiguous_detector(frame: bytes) -> list:
 
     try:
         with mcp_client:
+            initial_messages = [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "image": {
+                                "format": "png",
+                                "source": {
+                                    "bytes": frame
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+            
             agent = Agent(
                 model=model,
                 system_prompt="""
@@ -35,21 +53,20 @@ def ambiguous_detector(frame: bytes) -> list:
                 You received the following vision data with context.
                 Based on what you see, describe if this looks like a risk or normal behavior and indicate the level of emergency as either high, medium, or low.
                 Respond concisely and suggest one next step.
-                Return output as a list of JSONs like:
+                Return only output a list of JSON like:
                 [
                     {"incident": "water spill",
                      "emergency_level": "low",
                      "summary": "Water was spilled in bathroom - potential slipping hazard.",
                      "suggestion": "Clean up the spill immediately to avoid injuries."},
-                     
                      {"...": "...",
                      ...},
-                     
                      ...
                 ]
                 """,
+                messages=initial_messages
                 )
-            result = agent(frame)
+            result = agent("Please analyze this image.")
             return result.message
                 
     except Exception as e:
