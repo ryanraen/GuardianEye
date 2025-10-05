@@ -45,26 +45,27 @@ def ambiguous_detector(frame: bytes) -> list:
                 }
             ]
 
-            with Agent(
+            agent = Agent(
                 model=model,
                 system_prompt="""You are an AI home safety agent... (same prompt)""",
                 messages=initial_messages
-            ) as agent:
-                result = agent("Please analyze this image.")
+            )
 
-                try:
-                    parsed = json.loads(result.message)
-                    if isinstance(parsed, list):
-                        return parsed
-                    else:
-                        return [parsed]
-                except Exception:
-                    return [{
-                        "incident": "None",
-                        "emergency_level": "None",
-                        "summary": "Everything is normal.",
-                        "suggestion": "No actions needed."
-                    }]
+            result = agent("Please analyze this image.")
+
+            try:
+                parsed = json.loads(result.message)
+                if isinstance(parsed, list):
+                    return parsed
+                else:
+                    return [parsed]
+            except Exception:
+                return [{
+                    "incident": "None",
+                    "emergency_level": "None",
+                    "summary": "Everything is normal.",
+                    "suggestion": "No actions needed."
+                }]
     except Exception as e:
         print("SERVER CONNECTION FAILED:", e)
         return [{
