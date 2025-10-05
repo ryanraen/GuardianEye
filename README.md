@@ -21,6 +21,7 @@ The backend runs a Gemini 2.5 Flash model prompt-engineered to identify safety i
 ]
 #### Real-Time Alerts
 * Integrates Twilio SMS API to send immediate text alerts to caregivers or homeowners when an emergency is detected.
+* GuardianEye Alert: Possible fall detected in the living room. Please check immediately.
 #### Modular Architecture
 * Frontend (React + TypeScript): clean interface for live camera view and status dashboard.
 * Backend (FastAPI + Python): handles AI inference and Twilio notifications.
@@ -47,10 +48,6 @@ python routes/app.py
 cd frontend
 npm install
 npm start
-### Alerts
-#### SMS Alerts (Twilio)
-When a danger or anomaly is detected, the backend automatically sends an SMS alert:
-* GuardianEye Alert: Possible fall detected in the living room. Please check immediately.
 ### Tech Stack
 #### Layer	Technology
 * Frontend:	React, TypeScript, MediaPipe, TailwindCSS
