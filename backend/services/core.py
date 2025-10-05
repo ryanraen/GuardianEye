@@ -1,10 +1,11 @@
-
-import base64
+from services.models.fall_detector import FallDetector
+from services.models.fire_detector import detect_fire_and_smoke
+from services.agent import ambiguous_detector
+from util.helpers import fall_detector
 from google import genai
-from google.genai import types
-import base64
 import os
 from dotenv import load_dotenv
+import json
 
 GEMINI_MODEL = 'gemini-2.5-flash'
 PROMPT = f"""
@@ -18,28 +19,26 @@ load_dotenv()
 
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
-def process_image(frame: base64, context: dict) -> list[str]:
+def process_image(frame: str, context: dict) -> str:
     """
     Main app orchestration pipeline
     frame: base64 image of a captured frame from camera feed
-    context: dict of e.g., {'room': 'kitchen', 'timestamp': ...}
+    context: dict of e.g., {'location': 'kitchen', 'timestamp': ...}
     """
     results = []
-    llm_analysis = get_llm_analysis(frame)
-    results.append(llm_analysis)
-    return results
 
-def get_llm_analysis(frame: base64):
-    
-    # ambiguous incident case
-    response = client.models.generate_content(
-    model=GEMINI_MODEL,
-    contents=[
-        types.Part.from_bytes(
-        data=frame,
-        mime_type='image/png',
-        ),
-        PROMPT,
-        ]
-    )
-    return response.text
+    # run specialized detectors
+    fall_detected = fall_detector.detect_fall(frame)
+ 
+    if fall_detected:
+        results.append({"incident": "Person Fallen",
+                        "emergency_level": "high",
+                        "summary": f"A person has fallen in {context["location"]}.",
+                        "suggestion": "Immediately check on the person and call for emergency services if they are unresponsive or in distress."})
+    # use LLM to detect ambiguous cases
+    else:
+        response = ambiguous_detector(frame)
+        if isinstance(response, list):
+            results.extend(response)
+
+    return results
