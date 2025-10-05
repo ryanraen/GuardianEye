@@ -23,7 +23,7 @@ def process_image(frame: str, context: dict) -> str:
     """
     Main app orchestration pipeline
     frame: base64 image of a captured frame from camera feed
-    context: dict of e.g., {'room': 'kitchen', 'timestamp': ...}
+    context: dict of e.g., {'location': 'kitchen', 'timestamp': ...}
     """
     results = []
 
@@ -33,7 +33,7 @@ def process_image(frame: str, context: dict) -> str:
     if fall_detected:
         results.append({"incident": "Person Fallen",
                         "emergency_level": "high",
-                        "summary": f"A person has fallen in {context["room"]}.",
+                        "summary": f"A person has fallen in {context["location"]}.",
                         "suggestion": "Immediately check on the person and call for emergency services if they are unresponsive or in distress."})
     
     # use LLM to detect ambiguous cases
