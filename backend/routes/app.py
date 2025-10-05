@@ -24,7 +24,6 @@ class DetectionRequest(BaseModel):
 
 class DetectionResponse(BaseModel):
     detections: List[dict]
-    danger: bool
 
 class Camera(BaseModel):
     id: str
@@ -74,8 +73,8 @@ def process(request: DetectionRequest):
         }
         frame_bytes = base64.b64decode(request.base64_image)
         detections = process_image(frame_bytes, context)
-        in_danger = any(detection.get("emergency_level") == "high" for detection in detections if isinstance(detection, dict))
-        return DetectionResponse(detections=detections, danger=in_danger)
+        # in_danger = any(detection.get("emergency_level") == "high" for detection in detections if isinstance(detection, dict))
+        return DetectionResponse(detections=detections)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing image: {str(e)}")
 

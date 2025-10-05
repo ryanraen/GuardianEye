@@ -19,7 +19,7 @@ load_dotenv()
 
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
-def process_image(frame: str, context: dict) -> str:
+def process_image(frame: str, context: dict) -> list:
     """
     Main app orchestration pipeline
     frame: base64 image of a captured frame from camera feed
@@ -38,7 +38,7 @@ def process_image(frame: str, context: dict) -> str:
     # use LLM to detect ambiguous cases
     else:
         response = ambiguous_detector(frame)
-        if isinstance(response, list):
-            results.extend(response)
+        data = json.loads(response)
+        results.extend(data)
 
     return results
