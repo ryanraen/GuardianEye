@@ -98,6 +98,42 @@ const App: React.FC = () => {
     setViewingEventDetail(null);
   };
 
+  const handleAIDetection = (detectionResult: any, location: string, videoClip?: Blob) => {
+    const detection = detectionResult.detections[0];
+    const incidentType = detection?.incident?.toLowerCase() || 'medical';
+    
+    console.log('🎬 App.tsx - Video clip received:', videoClip)
+    console.log('🎬 App.tsx - Video clip size:', videoClip?.size)
+    console.log('🎬 App.tsx - Video clip type:', videoClip?.type)
+    
+    // Create a new event from the AI detection result
+    const newEvent: Event = {
+      id: `ai-${Date.now()}`, // Unique ID based on timestamp
+      type: incidentType,
+      severity: detection?.emergency_level || 'high',
+      timestamp: new Date().toISOString().slice(0, 19).replace('T', ' '),
+      location: location,
+      description: detection?.summary || 'AI detected potential safety concern',
+      cameraId: 'cam1', // Live camera
+      // Include AI analysis data
+      aiSummary: detection?.summary || 'AI analysis completed',
+      aiSuggestion: detection?.suggestion || 'Please assess the situation and take appropriate action',
+      // Store video clip URL if available
+      videoClipUrl: videoClip && videoClip.size > 0 ? URL.createObjectURL(videoClip) : undefined
+    };
+    
+    console.log('🎬 App.tsx - Event created with videoClipUrl:', newEvent.videoClipUrl)
+
+    // Add the new event to the events list
+    setEvents(prevEvents => [newEvent, ...prevEvents]);
+    
+    // Navigate directly to the new event detail
+    setViewingEventDetail(newEvent);
+    
+    // Close any open camera view
+    setSelectedCamera(null);
+  };
+
   // Show loading state
   if (loading) {
     return (
@@ -145,6 +181,7 @@ const App: React.FC = () => {
       <CameraDetail 
         camera={selectedCamera} 
         onBack={handleBackToGrid}
+        onAIDetection={handleAIDetection}
       />
     );
   }

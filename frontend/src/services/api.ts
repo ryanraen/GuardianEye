@@ -35,6 +35,11 @@ export interface Event {
   location: string;
   description: string;
   cameraId: string;
+  // AI detection fields (optional for backward compatibility)
+  aiSummary?: string;
+  aiSuggestion?: string;
+  // Video clip for AI-generated events
+  videoClipUrl?: string;
 }
 
 export interface HealthStatus {
