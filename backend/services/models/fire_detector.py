@@ -11,7 +11,12 @@ def detect_fire_and_smoke(frame, conf_thresh=0.4):
     """
     nparr = np.fromstring(frame, np.uint8)
 
-    results = model.predict(source=nparr, conf=conf_thresh, verbose=False)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+    if img is None:
+        raise ValueError("Failed to decode image from bytes")
+
+    results = model.predict(source=img, conf=conf_thresh, verbose=False)
 
     detections = []
     for result in results:
