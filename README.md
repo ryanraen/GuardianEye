@@ -28,26 +28,36 @@ The backend runs a Gemini 2.5 Flash model prompt-engineered to identify safety i
 * AI Service Layer: leverages Google Gemini through Strands SDK for scalable, interpretable reasoning.
 ### Setup Guide
 1. Clone the Repository
-git clone https://github.com/ryanraen/GuardianEye.git
-cd GuardianEye
+```bash
+$ git clone https://github.com/ryanraen/GuardianEye.git
+$ cd GuardianEye
+```
 2. Backend Setup
-cd backend
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-Create a .env file in the backend directory:
+```bash
+$ cd backend
+$ python -m venv venv
+$ source venv/bin/activate
+$ pip install -r requirements.txt
+```
+3. Create a .env file in the backend directory:
+```.env
 GEMINI_API_KEY=your_google_genai_key
 TWILIO_ACCOUNT_SID=your_twilio_sid
 TWILIO_AUTH_TOKEN=your_twilio_auth_token
 TWILIO_MESSAGING_SERVICE_SID=your_twilio_service_sid
 SUPABASE_URL=your_supabase_url
 SUPABASE_KEY=your_supabase_anon_key
-Run the backend:
+```
+4. Run the backend:
+```bash
 python routes/app.py
-3. Frontend Setup
+```
+5. Frontend Setup
+```bash
 cd frontend
 npm install
 npm start
+```
 ### Tech Stack
 #### Layer	Technology
 * Frontend:	React, TypeScript, MediaPipe, TailwindCSS
