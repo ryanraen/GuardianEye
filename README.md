@@ -11,6 +11,7 @@ GuardianEye integrates cutting-edge AI tools, cloud infrastructure, and a modern
 * Detects ambiguous or dangerous situations (e.g., falls, unsafe movements, water spills).
 #### Intelligent Incident Analysis
 The backend runs a Gemini 2.5 Flash model prompt-engineered to identify safety incidents in the following format:
+```JSON
 [
   {
     "incident": "Fall detected",
@@ -19,6 +20,7 @@ The backend runs a Gemini 2.5 Flash model prompt-engineered to identify safety i
     "suggestion": "Check on the individual immediately and call emergency services if necessary."
   }
 ]
+```
 #### Real-Time Alerts
 * Integrates Twilio SMS API to send immediate text alerts to caregivers or homeowners when an emergency is detected.
 * GuardianEye Alert: Possible fall detected in the living room. Please check immediately.
