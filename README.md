@@ -47,8 +47,6 @@ GEMINI_API_KEY=your_google_genai_key
 TWILIO_ACCOUNT_SID=your_twilio_sid
 TWILIO_AUTH_TOKEN=your_twilio_auth_token
 TWILIO_MESSAGING_SERVICE_SID=your_twilio_service_sid
-SUPABASE_URL=your_supabase_url
-SUPABASE_KEY=your_supabase_anon_key
 ```
 4. Run the backend:
 ```bash
